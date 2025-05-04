@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "889622358502",
+    "project_id": "androidastrostats",
+    "storage_bucket": "androidastrostats.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889622358502:android:fc913586e7a35fe33e0e27",
+        "android_client_info": {
+          "package_name": "app.lilaverse.astroStats"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG9E5iDCTy1_JhaEzgijPNuLtddc2rk6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889622358502:android:d5c599bae33764883e0e27",
+        "android_client_info": {
+          "package_name": "app.lilaverse.astrostatsandroid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG9E5iDCTy1_JhaEzgijPNuLtddc2rk6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
