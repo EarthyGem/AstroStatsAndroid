@@ -114,6 +114,15 @@ data class Coordinate(
 
             return result
         }
+        fun fromAscendant(cusp: Cusp, date: Date): Coordinate {
+            require(cusp.index == 1) { "Ascendant must be cusp 1" }
+            return Coordinate(CelestialObject.SpecialCusp("Ascendant", cusp), date)
+        }
+
+        fun fromMidheaven(cusp: Cusp, date: Date): Coordinate {
+            require(cusp.index == 10) { "Midheaven must be cusp 10" }
+            return Coordinate(CelestialObject.SpecialCusp("Midheaven", cusp), date)
+        }
 
         private fun calculateLongitude(body: CelestialObject, date: Date): Double {
             return sweCalc(body, date)[0]

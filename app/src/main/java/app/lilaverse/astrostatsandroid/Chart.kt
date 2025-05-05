@@ -1,5 +1,6 @@
 package app.lilaverse.astrostatsandroid.model
 
+import app.lilaverse.astrostatsandroid.HouseCusps
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
@@ -17,5 +18,7 @@ data class Chart(
     val planetaryPositions: List<String>,
     val sunSign: String,
     val moonSign: String,
-    val risingSign: String
+    val risingSign: String,
+    val houseCusps: HouseCusps
+
 )

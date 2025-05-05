@@ -4,26 +4,15 @@ sealed class CelestialObject {
     abstract val keyName: String
 
     data class Planet(val planet: app.lilaverse.astrostatsandroid.Planet) : CelestialObject() {
-        override val keyName: String
-            get() = planet.keyName
+        override val keyName: String get() = planet.keyName
     }
-
 
     data class Cusp(val cusp: app.lilaverse.astrostatsandroid.Cusp) : CelestialObject() {
-        override val keyName: String
-            get() = "Cusp ${cusp.index}"
+        override val keyName: String get() = "Cusp ${cusp.index}"
     }
 
-    object Ascendant : CelestialObject() {
-        override val keyName: String = "Ascendant"
-    }
-
-    object Midheaven : CelestialObject() {
-        override val keyName: String = "Midheaven"
-    }
-
-    object NorthNode : CelestialObject() {
-        override val keyName: String = "North Node"
+    data class SpecialCusp(val name: String, val cusp: app.lilaverse.astrostatsandroid.Cusp) : CelestialObject() {
+        override val keyName: String get() = name
     }
 
     object SouthNode : CelestialObject() {
@@ -33,9 +22,6 @@ sealed class CelestialObject {
     companion object {
         fun fromString(name: String): CelestialObject {
             return when (name.lowercase()) {
-                "ascendant" -> Ascendant
-                "midheaven" -> Midheaven
-                "north node" -> NorthNode
                 "south node" -> SouthNode
                 else -> {
                     val planet = app.lilaverse.astrostatsandroid.Planet.fromKeyName(name)
@@ -43,6 +29,16 @@ sealed class CelestialObject {
                     Planet(planet)
                 }
             }
+        }
+
+        fun ascendantFrom(cusp: app.lilaverse.astrostatsandroid.Cusp): SpecialCusp {
+            require(cusp.index == 1) { "Ascendant must be Cusp 1" }
+            return SpecialCusp("Ascendant", cusp)
+        }
+
+        fun midheavenFrom(cusp: app.lilaverse.astrostatsandroid.Cusp): SpecialCusp {
+            require(cusp.index == 10) { "Midheaven must be Cusp 10" }
+            return SpecialCusp("Midheaven", cusp)
         }
     }
 }

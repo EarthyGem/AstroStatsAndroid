@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import app.lilaverse.astrostatsandroid.HouseCuspBuilder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -112,7 +113,9 @@ fun ChartInputScreen(
                 planetaryPositions = planetPositions,
                 sunSign = sunCoord.signName,
                 moonSign = moonCoord.signName,
-                risingSign = risingSign
+                risingSign = risingSign,
+                houseCusps = HouseCuspBuilder.create(latitude, longitude, selectedDateTime.time)
+
             )
 
             onSaveComplete(chart)

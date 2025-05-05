@@ -28,7 +28,7 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
 
         when (selectedTab) {
             0 -> BirthChartTab(chart)
-            1 -> PlanetScoresTab()
+            1 -> PlanetScoresTab(chart.houseCusps)
             2 -> SignScoresTab()
             3 -> HouseScoresTab()
             4 -> AspectScoresTab()

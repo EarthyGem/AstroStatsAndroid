@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import app.lilaverse.astrostatsandroid.HouseCusps
+
 
 @Composable
 fun BirthChartTab(chart: Chart) {
@@ -28,14 +30,15 @@ fun BirthChartTab(chart: Chart) {
 
 
 @Composable
-fun PlanetScoresTab() {
+fun PlanetScoresTab(houseCusps: HouseCusps) {
+
     var selectedSort by remember { mutableStateOf(0) } // 0 = Strength, 1 = Conventional
     val sortOptions = listOf("By Strength", "Conventional")
 
     val planetScores = listOf(
         Triple(CelestialObject.Planet(Planet.Mercury), 10.2f, 56.5f),
-        Triple(CelestialObject.Ascendant, 9.7f, 53.9f),
-        Triple(CelestialObject.Midheaven, 9.4f, 52.2f),
+        Triple(CelestialObject.ascendantFrom(houseCusps.getCusp(0)), 9.7f, 53.9f),
+        Triple(CelestialObject.midheavenFrom(houseCusps.getCusp(9)), 9.4f, 52.2f),
         Triple(CelestialObject.Planet(Planet.Moon), 9.2f, 51.1f),
         Triple(CelestialObject.Planet(Planet.Mars), 8.5f, 47.0f),
         Triple(CelestialObject.Planet(Planet.Uranus), 8.2f, 45.7f),
@@ -96,14 +99,15 @@ fun PlanetScoresTab() {
         Spacer(Modifier.height(12.dp))
 
         sortedScores.forEach { (obj, percent, score) ->
-            val (name, symbol) = when (obj) {
-                is CelestialObject.Planet -> obj.planet.keyName to obj.planet.symbol
-                CelestialObject.Ascendant -> "Ascendant" to "↑"
-                CelestialObject.Midheaven -> "Midheaven" to "⊗"
-                CelestialObject.SouthNode -> "South Node" to "☋"
-                CelestialObject.NorthNode -> "North Node" to "☊"
-                is CelestialObject.Cusp -> obj.keyName to "" // or custom symbol if you prefer
+            val (name, symbol) = when {
+                obj is CelestialObject.Planet -> obj.planet.keyName to obj.planet.symbol
+                obj is CelestialObject.Cusp && obj == CelestialObject.ascendantFrom(houseCusps.getCusp(0)) -> "Ascendant" to "↑"
+                obj is CelestialObject.Cusp && obj == CelestialObject.midheavenFrom(houseCusps.getCusp(9)) -> "Midheaven" to "⊗"
+                obj == CelestialObject.SouthNode -> "South Node" to "☋"
+                obj is CelestialObject.Cusp -> obj.keyName to ""
+                else -> "Unknown" to "?"
             }
+
 
             val color = planetColors[name] ?: Color.Gray
 

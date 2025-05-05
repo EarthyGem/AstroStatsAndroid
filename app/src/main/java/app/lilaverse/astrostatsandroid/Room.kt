@@ -5,7 +5,7 @@ import androidx.room.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
-@Database(entities = [Chart::class], version = 1)
+@Database(entities = [Chart::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ChartDatabase : RoomDatabase() {
     abstract fun chartDao(): ChartDao
@@ -20,7 +20,9 @@ abstract class ChartDatabase : RoomDatabase() {
                     context.applicationContext,
                     ChartDatabase::class.java,
                     "chart_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Optional: auto-wipe DB on version change during dev
+                    .build()
                 INSTANCE = instance
                 instance
             }
