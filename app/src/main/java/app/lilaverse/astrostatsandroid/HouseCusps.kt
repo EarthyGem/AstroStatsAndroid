@@ -64,6 +64,29 @@ class HouseCusps(private val cusps: List<Cusp>) {
         // Fallback (shouldn't happen)
         return 12
     }
+    fun getInterceptedSigns(): List<Zodiac.Sign> {
+        val intercepted = mutableListOf<Zodiac.Sign>()
+
+        for (i in 0 until 12) {
+            val start = allCusps()[i].normalizedLongitude
+            val end = allCusps()[(i + 1) % 12].normalizedLongitude
+
+            var current = start
+            while (true) {
+                current = (current + 30) % 360
+                if ((start < end && current >= end) || (start > end && (current >= end && current < start))) {
+                    break
+                }
+
+                val sign = Zodiac.from(current)
+                if (sign != Zodiac.from(start) && sign != Zodiac.from(end)) {
+                    if (!intercepted.contains(sign)) intercepted.add(sign)
+                }
+            }
+        }
+
+        return intercepted.distinct()
+    }
 
     override fun toString(): String {
         return cusps.joinToString(separator = "\n") { cusp ->

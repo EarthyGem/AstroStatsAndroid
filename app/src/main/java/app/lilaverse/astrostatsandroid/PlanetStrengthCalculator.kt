@@ -228,6 +228,20 @@ class PlanetStrengthCalculator(
         }
         return aspects
     }
+    fun totalScoresByAspectType(bodies: List<Coordinate>): List<Pair<Kind, Double>> {
+        val scoresByAspect = allCelestialAspectScoresByAspect(bodies)
+
+        val aspectScoreTotals: MutableMap<Kind, Double> = mutableMapOf()
+
+        for ((aspect, score) in scoresByAspect) {
+            val kind = aspect.kind
+            aspectScoreTotals[kind] = (aspectScoreTotals[kind] ?: 0.0) + score
+        }
+
+        return aspectScoreTotals.entries
+            .sortedByDescending { it.value }
+            .map { it.key to it.value }
+    }
 
     fun allParallelAspects(bodies: List<Coordinate>): List<CelestialAspect> {
         val orb = 1.0

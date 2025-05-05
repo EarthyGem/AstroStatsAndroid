@@ -99,9 +99,14 @@ fun ChartInputScreen(
             val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), selectedDateTime.time)
 
             // Fallback: hardcoded rising sign as placeholder
-            val risingSign = "nil"
 
-            // Create the chart
+            // Calculate house cusps
+            val houseCusps = HouseCuspBuilder.create(latitude, longitude, selectedDateTime.time)
+
+// Calculate Ascendant (Rising Sign)
+            val ascCusp = houseCusps.getCusp(0) // First house cusp
+            val ascendantSign = Zodiac.signForDegree(ascCusp.longitude)
+
             val chart = Chart(
                 name = name,
                 date = selectedDateTime.time,
@@ -113,11 +118,9 @@ fun ChartInputScreen(
                 planetaryPositions = planetPositions,
                 sunSign = sunCoord.signName,
                 moonSign = moonCoord.signName,
-                risingSign = risingSign,
-                houseCusps = HouseCuspBuilder.create(latitude, longitude, selectedDateTime.time)
-
+                risingSign = ascendantSign, // Use the calculated rising sign
+                houseCusps = houseCusps
             )
-
             onSaveComplete(chart)
 
         } catch (e: Exception) {
