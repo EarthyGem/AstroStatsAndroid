@@ -85,25 +85,42 @@ fun ChartInputScreen(
         }
     }
 
+    // In your ChartInputScreen.kt file, modify the saveChart() function:
     fun saveChart() {
         if (!validateInputs()) {
             errorMessage = "Please fill in all required fields"
             return
         }
-        val chart = Chart(
-            name = name,
-            date = selectedDateTime.time,
-            birthPlace = place,
-            locationName = place,
-            latitude = latitude,
-            longitude = longitude,
-            timezone = timezone,
-            planetaryPositions = planetPositions,
-            sunSign = "Gemini",
-            moonSign = "Cancer",
-            risingSign = "Virgo"
-        )
-        onSaveComplete(chart)
+
+        try {
+            // Calculate planetary coordinates
+            val sunCoord = Coordinate(CelestialObject.Planet(Planet.Sun), selectedDateTime.time)
+            val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), selectedDateTime.time)
+
+            // Fallback: hardcoded rising sign as placeholder
+            val risingSign = "nil"
+
+            // Create the chart
+            val chart = Chart(
+                name = name,
+                date = selectedDateTime.time,
+                birthPlace = place,
+                locationName = place,
+                latitude = latitude,
+                longitude = longitude,
+                timezone = timezone,
+                planetaryPositions = planetPositions,
+                sunSign = sunCoord.signName,
+                moonSign = moonCoord.signName,
+                risingSign = risingSign
+            )
+
+            onSaveComplete(chart)
+
+        } catch (e: Exception) {
+            errorMessage = "Error calculating chart: ${e.message}"
+            e.printStackTrace()
+        }
     }
 
     fun launchDateTimePicker() {

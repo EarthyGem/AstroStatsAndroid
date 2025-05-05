@@ -1,6 +1,7 @@
 package app.lilaverse.astrostatsandroid
 
 object Zodiac {
+
     private val signs = listOf(
         Sign("Aries", "♈︎"),
         Sign("Taurus", "♉︎"),
@@ -28,6 +29,12 @@ object Zodiac {
         return signs[index % 12].glyph
     }
 
+    fun from(degree: Double): Sign {
+        val normalized = (degree % 360 + 360) % 360
+        val index = (normalized / 30).toInt()
+        return signs[index % 12]
+    }
+
     fun signAt(index: Int): Sign {
         return signs[index % 12]
     }
@@ -35,5 +42,8 @@ object Zodiac {
     data class Sign(
         val name: String,
         val glyph: String
-    )
+    ) {
+        override fun toString(): String = "$name $glyph"
+    }
+
 }

@@ -31,13 +31,18 @@ data class Coordinate(
         date = date
     )
 
-    /** Zodiac sign name this coordinate is in */
-    val signName: String
-        get() = Zodiac.signForDegree(longitude)
+    /** Zodiac sign object this coordinate is in */
+    val sign: Zodiac.Sign
+        get() = Zodiac.from(longitude)
 
-    /** Glyph of the zodiac sign this coordinate is in */
+    /** Zodiac sign name */
+    val signName: String
+        get() = sign.toString()
+
+
+    /** Glyph of the zodiac sign */
     val signGlyph: String
-        get() = Zodiac.glyphForDegree(longitude)
+        get() = sign.glyph
 
     /** Degree within the zodiac sign (0.00–29.99) */
     val degreeInSign: Double
@@ -55,6 +60,10 @@ data class Coordinate(
     companion object {
         private val swe = SwissEph()
 
+        fun fromCusp(cusp: Cusp, date: Date): Coordinate {
+            return Coordinate(cusp, date)
+        }
+
         private fun calculateJulianDay(date: Date): Double {
             val calendar = Calendar.getInstance()
             calendar.time = date
@@ -71,7 +80,6 @@ data class Coordinate(
 
             return SweDate.getJulDay(year, month, day, utcHour, SweDate.SE_GREG_CAL)
         }
-
 
         private fun sweIdForBody(body: CelestialObject): Int? {
             return when (body) {
@@ -108,15 +116,15 @@ data class Coordinate(
         }
 
         private fun calculateLongitude(body: CelestialObject, date: Date): Double {
-            return sweCalc(body, date)[0] // longitude
+            return sweCalc(body, date)[0]
         }
 
         private fun calculateDeclination(body: CelestialObject, date: Date): Double {
-            return sweCalc(body, date)[1] // declination
+            return sweCalc(body, date)[1]
         }
 
         private fun calculateVelocity(body: CelestialObject, date: Date): Double {
-            return sweCalc(body, date)[3] // speed in longitude
+            return sweCalc(body, date)[3]
         }
     }
 }
