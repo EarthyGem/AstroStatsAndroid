@@ -15,8 +15,7 @@ enum class Planet(
     Uranus("♅", "Uranus", 7.0 * 365),
     Neptune("♆", "Neptune", 14.0 * 365),
     Pluto("♇", "Pluto", 20.67 * 365),
-    SouthNode("☋", "South Node", 1.5 * 365),
-    NorthNode("", "North Node", 1.5 * 365);
+    SouthNode("☋", "South Node", 1.5 * 365);
 
     val celestialObject: CelestialObject
         get() = CelestialObject.Planet(this)

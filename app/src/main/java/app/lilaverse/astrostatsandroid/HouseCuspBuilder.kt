@@ -2,43 +2,52 @@ package app.lilaverse.astrostatsandroid
 
 import swisseph.SwissEph
 import swisseph.SweDate
+import swisseph.SweConst
 import java.util.*
 
 object HouseCuspBuilder {
     private val swe = SwissEph()
 
+    private fun calculateJulianDay(date: Date): Double {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+
+        val timeZoneOffset = calendar.timeZone.getOffset(calendar.timeInMillis) / 3600000.0
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY) + calendar.get(Calendar.MINUTE) / 60.0
+
+        val utcHour = hour - timeZoneOffset
+
+        return SweDate.getJulDay(year, month, day, utcHour, SweDate.SE_GREG_CAL)
+    }
+
     fun create(latitude: Double, longitude: Double, date: Date): HouseCusps {
         val jd = calculateJulianDay(date)
-        val cusps = DoubleArray(13) // 1–12 are used
+        val cusps = DoubleArray(13)
         val ascmc = DoubleArray(10)
 
         swe.swe_houses(
             jd,
-            'P'.code,     // House system: Placidus
+            SweConst.SEFLG_SWIEPH,
             latitude,
             longitude,
-            0,            // Flag (should be 0)
+            SweConst.SE_HSYS_PLACIDUS, // ← fixed constant
             cusps,
             ascmc
         )
 
-        val cuspList = (1..12).map { i ->
-            val lon = (cusps[i] + 360.0) % 360.0
-            Cusp(index = i, longitude = lon)
+
+        // ✅ Force correct ASC and MC into cusps array
+        cusps[1] = ascmc[0]  // ASC
+        cusps[10] = ascmc[1] // MC
+
+        // ✅ Build the list of Cusp objects
+        val cuspList = (1..12).map { index ->
+            Cusp(index, cusps[index])
         }
 
         return HouseCusps(cuspList)
-    }
-
-    private fun calculateJulianDay(date: Date): Double {
-        val cal = Calendar.getInstance()
-        cal.time = date
-
-        val year = cal.get(Calendar.YEAR)
-        val month = cal.get(Calendar.MONTH) + 1
-        val day = cal.get(Calendar.DAY_OF_MONTH)
-        val hour = cal.get(Calendar.HOUR_OF_DAY) + cal.get(Calendar.MINUTE) / 60.0
-
-        return SweDate.getJulDay(year, month, day, hour, SweDate.SE_GREG_CAL)
     }
 }

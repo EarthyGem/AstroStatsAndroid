@@ -13,8 +13,14 @@ class ChartCake(
 ) {
     private val swe = SwissEph()
 
+    // ✅ Shared house cusp property (used across the app)
+    val houseCusps: HouseCusps by lazy {
+        HouseCuspBuilder.create(latitude, longitude, birthDate)
+    }
+
+    // ✅ All natal planets + South Node + calculated ASC/MC using correct location
     val natalBodies: List<Coordinate> by lazy {
-        val planets = listOf(
+        val basePlanets = listOf(
             CelestialObject.Planet(Planet.Sun),
             CelestialObject.Planet(Planet.Moon),
             CelestialObject.Planet(Planet.Mercury),
@@ -25,16 +31,12 @@ class ChartCake(
             CelestialObject.Planet(Planet.Uranus),
             CelestialObject.Planet(Planet.Neptune),
             CelestialObject.Planet(Planet.Pluto),
-            CelestialObject.SouthNode,
-            CelestialObject.ascendantFrom(houseCusps.getCusp(0)),
-            CelestialObject.midheavenFrom(houseCusps.getCusp(9))
-        )
+            CelestialObject.SouthNode
+        ).map { Coordinate(it, birthDate) }
 
-        planets.map { Coordinate(it, birthDate) }
-    }
+        val asc = Coordinate.fromAscendant(houseCusps.getCusp(0), birthDate, latitude, longitude)
+        val mc = Coordinate.fromMidheaven(houseCusps.getCusp(9), birthDate, latitude, longitude)
 
-    val houseCusps: HouseCusps by lazy {
-        HouseCuspBuilder.create(latitude, longitude, birthDate)
-
+        basePlanets + asc + mc
     }
 }

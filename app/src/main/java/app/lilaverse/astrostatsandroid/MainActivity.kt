@@ -99,21 +99,18 @@ class MainActivity : ComponentActivity() {
         val calculator = PlanetStrengthCalculator(
             orbDictionary = orbDictionary,
             houseProvider = { coord ->
-                val closest = chartCake.houseCusps.allCusps().minByOrNull {
-                    kotlin.math.abs(it.longitude - coord.longitude)
-                } ?: chartCake.houseCusps.getCusp(0)
-                closest.index
+                chartCake.houseCusps.houseForLongitude(coord.longitude)
             },
             luminaryChecker = { it.body.keyName == "Sun" || it.body.keyName == "Moon" },
             houseCuspsProvider = { lon ->
-                val cusp = chartCake.houseCusps.allCusps().minByOrNull {
-                    kotlin.math.abs(it.longitude - lon)
-                } ?: chartCake.houseCusps.getCusp(0)
+                val houseIndex = chartCake.houseCusps.houseForLongitude(lon)
+                val cusp = chartCake.houseCusps.getCusp(houseIndex)
                 HouseCusp(cusp.index, cusp.longitude)
             },
             houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
         )
 
+        // 🧮 Original: Aspect + House Scores separately
         val aspectScores = calculator.allCelestialAspectScoresCo(bodies)
         val houseScores = calculator.getHouseScoreForPlanetsCo(bodies)
 
@@ -127,18 +124,29 @@ class MainActivity : ComponentActivity() {
             val aspect = aspectScores[planet] ?: 0.0
             val house = houseScores[planet] ?: 0.0
             val total = aspect + house
-            Log.d("PlanetStrength", "$name → Aspect: %.2f | House: %.2f | Total: %.2f".format(aspect, house, total))
+            Log.d(
+                "PlanetStrength",
+                "$name → Aspect: %.2f | House: %.2f | Total: %.2f".format(aspect, house, total)
+            )
         }
 
-        // ✅ Extra: Log house placements
+        // 🌐 Extra: Log declinations + total score using method with declination debug
+        val totalScores = calculator.getTotalPowerScoresForPlanetsCo(bodies)
+        Log.d(
+            "PlanetStrength",
+            "📡 Total Planet Power Scores (from full method with declination logs):"
+        )
+        val totalSorted = totalScores.entries.sortedByDescending { it.value }
+        for ((planet, score) in totalSorted) {
+            Log.d("PlanetStrength", "${planet.body.keyName.padEnd(12)} → Total: %.2f".format(score))
+        }
+
+        // 🏠 Extra: Log house placements
         Log.d("PlanetHouse", "🏠 Planet House Placements:")
         for (planet in bodies) {
             val name = planet.body.keyName.padEnd(12)
             val lon = "%.2f".format(planet.longitude)
             val house = chartCake.houseCusps.houseForLongitude(planet.longitude)
-
-
-
             Log.d("PlanetHouse", "$name → Lon: $lon° falls in House $house")
         }
     }

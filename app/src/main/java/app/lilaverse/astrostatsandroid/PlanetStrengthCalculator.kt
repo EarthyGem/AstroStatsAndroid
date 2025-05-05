@@ -96,6 +96,18 @@ class PlanetStrengthCalculator(
     private val houseCuspValues: List<Double>
 ) {
     fun getTotalPowerScoresForPlanetsCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
+        Log.d("DeclinationDebug", "🔍 Logging Declinations for All Coordinates:")
+        bodies.forEach { body ->
+            val name = body.body.keyName
+            val lon = String.format("%.2f", body.longitude)
+            val dec = String.format("%.2f", body.declination)
+            val hemisphere = if (body.declination >= 0) "N" else "S"
+            Log.d("DeclinationDebug", "🌐 $name → Lon: $lon° | Dec: $dec° $hemisphere")
+            if (body.declination == 0.0 && name != "Ascendant" && name != "Midheaven") {
+                Log.w("DeclinationDebug", "⚠️ $name has declination = 0.0 — possible missing calc")
+            }
+        }
+
         val aspectScores = allCelestialAspectScoresCo(bodies)
         val houseScores = getHouseScoreForPlanetsCo(bodies)
         return (aspectScores.keys + houseScores.keys).associateWith { body ->
@@ -106,11 +118,18 @@ class PlanetStrengthCalculator(
         }
     }
 
+
     fun getHouseScoreForPlanetsCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
         return bodies.associateWith { getHouseScore(it) }
     }
 
     private fun getHouseScore(body: Coordinate): Double {
+        val key = body.body.keyName
+        if (key == "Ascendant" || key == "Midheaven") {
+            Log.d("HouseScore", "🔒 $key is fixed at 15.0")
+            return 15.0
+        }
+
         val house = houseProvider(body)
         val power = housePower[house - 1]
         val variation = houseVar[house - 1]
@@ -149,14 +168,28 @@ class PlanetStrengthCalculator(
         val (parallels, nonParallels) = aspects.partition { it.kind == Kind.Parallel }
 
         for (aspect in parallels) {
-            val h1 = houseProvider(aspect.body1)
-            val h2 = houseProvider(aspect.body2)
-            val orb = getParallelOrbCategory(h1, h2, luminaryChecker(aspect.body1), luminaryChecker(aspect.body2))
-            val actualOrb = aspect.orbDelta
-            val score = (1 - abs(actualOrb)) * orb
-            Log.d("AspectParallel", "💠 ${aspect.body1.body.keyName}-${aspect.body2.body.keyName}: Orb=$actualOrb | Max=$orb | Score=$score")
+            val p1 = aspect.body1
+            val p2 = aspect.body2
+            val h1 = houseProvider(p1)
+            val h2 = houseProvider(p2)
+            val isLum1 = luminaryChecker(p1)
+            val isLum2 = luminaryChecker(p2)
+
+            val maxOrb = getParallelOrbCategory(h1, h2, isLum1, isLum2)
+
+            val decl1 = abs(p1.declination)
+            val decl2 = abs(p2.declination)
+            val actualOrb = abs(decl1 - decl2)
+
+            val score = (1 - actualOrb) * maxOrb
+
+            Log.d(
+                "AspectParallel",
+                "💠 ${p1.body.keyName}-${p2.body.keyName}: | Dec1=$decl1 | Dec2=$decl2 | Orb=$actualOrb | MaxOrb=$maxOrb | Score=$score"
+            )
             scoreDict[aspect] = score
         }
+
 
         for (aspect in nonParallels) {
             val p1 = aspect.body1
@@ -197,12 +230,35 @@ class PlanetStrengthCalculator(
     }
 
     fun allParallelAspects(bodies: List<Coordinate>): List<CelestialAspect> {
-        return bodies.flatMapIndexed { i, b1 ->
-            bodies.drop(i + 1).mapNotNull { b2 ->
-                CelestialAspect.fromCoordinates(b1, b2, 1.0)?.takeIf { it.kind == Kind.Parallel }
+        val orb = 1.0
+        val parallels = mutableListOf<CelestialAspect>()
+
+        for (i in bodies.indices) {
+            val b1 = bodies[i]
+            for (j in i + 1 until bodies.size) {
+                val b2 = bodies[j]
+
+                val dec1Abs = abs(b1.declination)
+                val dec2Abs = abs(b2.declination)
+                val orbDelta = abs(dec1Abs - dec2Abs)
+
+                if (orbDelta <= orb) {
+                    val aspect = CelestialAspect.fromCoordinates(b1, b2, orb)
+                    if (aspect != null) {
+                        aspect.kind = Kind.Parallel // Treat both parallel and contraparallel identically
+                        parallels.add(aspect)
+                        Log.d(
+                            "AspectParallel",
+                            "💠 ${b1.body.keyName}-${b2.body.keyName}: | Dec1=${b1.declination} | Dec2=${b2.declination} | Orb=$orbDelta"
+                        )
+                    }
+                }
             }
         }
+
+        return parallels
     }
+
 
     fun getOrbCategory(p1: Coordinate, p2: Coordinate): Pair<Double, CelestialAspect>? {
         if (p1 == p2) return null

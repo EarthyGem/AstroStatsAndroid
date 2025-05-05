@@ -15,14 +15,15 @@ sealed class CelestialObject {
         override val keyName: String get() = name
     }
 
+    /** Represents the Mean South Node (☋), computed as Mean North Node + 180° */
     object SouthNode : CelestialObject() {
-        override val keyName: String = "South Node"
+        override val keyName: String = "South Node ☋"
     }
 
     companion object {
         fun fromString(name: String): CelestialObject {
             return when (name.lowercase()) {
-                "south node" -> SouthNode
+                "south node", "☋", "mean south node" -> SouthNode
                 else -> {
                     val planet = app.lilaverse.astrostatsandroid.Planet.fromKeyName(name)
                         ?: throw IllegalArgumentException("Unknown celestial object: $name")

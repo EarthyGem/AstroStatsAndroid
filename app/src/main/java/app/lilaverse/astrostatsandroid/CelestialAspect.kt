@@ -5,7 +5,7 @@ import kotlin.math.abs
 
 data class CelestialAspect(
     val id: UUID = UUID.randomUUID(),
-    val kind: Kind,
+    var kind: Kind,
     val body1: Coordinate,
     val body2: Coordinate,
     val angle: Double,
