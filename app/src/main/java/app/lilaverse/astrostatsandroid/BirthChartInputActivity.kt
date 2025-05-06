@@ -11,6 +11,12 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -242,12 +248,64 @@ class BirthChartInputActivity : AppCompatActivity() {
         }
     }
 
+    // Change this method to properly handle timezones
     private fun getTimezoneFromLocation(lat: Double, lng: Double) {
-        // For a real app, you'd use a timezone API here
-        // For simplicity, we'll use the device's timezone
-        val tz = TimeZone.getDefault()
-        timezone = tz.id
-        Log.d(TAG, "Timezone set to: $timezone")
+        // Instead of using device timezone
+        // val tz = TimeZone.getDefault()
+        // timezone = tz.id
+
+        // Use a proper timezone lookup API
+        try {
+            // Use the Google Time Zone API
+            val timestamp = System.currentTimeMillis() / 1000
+            val url = URL("https://maps.googleapis.com/maps/api/timezone/json?location=$lat,$lng&timestamp=$timestamp&key=YOUR_API_KEY")
+
+            // This is a simplified example - in production code, use proper async IO
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val connection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "GET"
+
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val jsonResponse = JSONObject(response)
+
+                    if (jsonResponse.getString("status") == "OK") {
+                        timezone = jsonResponse.getString("timeZoneId")
+                        Log.d(TAG, "Retrieved timezone for location: $timezone")
+
+                        // Adjust the birth date to use the correct timezone
+                        updateBirthDateTimezone()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error getting timezone: ${e.message}", e)
+                    // Fallback to device timezone as last resort
+                    timezone = TimeZone.getDefault().id
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initiating timezone request: ${e.message}", e)
+            timezone = TimeZone.getDefault().id
+        }
+    }
+
+    // Add this method to update the birth date when timezone changes
+    private fun updateBirthDateTimezone() {
+        // Create a new calendar with the birth location's timezone
+        val locationCalendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
+
+        // Get year, month, day, hour, minute from the current birthDate (which is in device timezone)
+        val deviceCalendar = Calendar.getInstance()
+        deviceCalendar.time = birthDate.time
+
+        // Set the same date and time in the location calendar
+        locationCalendar.set(Calendar.YEAR, deviceCalendar.get(Calendar.YEAR))
+        locationCalendar.set(Calendar.MONTH, deviceCalendar.get(Calendar.MONTH))
+        locationCalendar.set(Calendar.DAY_OF_MONTH, deviceCalendar.get(Calendar.DAY_OF_MONTH))
+        locationCalendar.set(Calendar.HOUR_OF_DAY, deviceCalendar.get(Calendar.HOUR_OF_DAY))
+        locationCalendar.set(Calendar.MINUTE, deviceCalendar.get(Calendar.MINUTE))
+
+        // Update birthDate
+        birthDate = locationCalendar
     }
 
     private fun showDatePicker() {

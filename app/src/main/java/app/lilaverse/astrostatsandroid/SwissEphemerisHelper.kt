@@ -5,16 +5,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 // SwissEphemerisHelper.kt
-fun getPlanetPositionsFor(date: Date): List<String> {
-    // Create a UTC calendar
-    val utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-    utcCal.time = date
-
+// Update to take timezone parameter
+fun getPlanetPositionsFor(date: Date, timezone: String = TimeZone.getDefault().id): List<String> {
     // Log for debugging
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
     Log.d("PlanetCalc", "Input date: ${formatter.format(date)}")
-    formatter.timeZone = TimeZone.getTimeZone("UTC")
-    Log.d("PlanetCalc", "UTC date: ${formatter.format(utcCal.time)}")
+    Log.d("PlanetCalc", "Using timezone: $timezone")
 
     val planets = listOf(
         Planet.Sun,
@@ -32,7 +28,8 @@ fun getPlanetPositionsFor(date: Date): List<String> {
 
     return planets.map { planet ->
         val body = CelestialObject.Planet(planet)
-        val coordinate = Coordinate(body, utcCal.time) // Use UTC time for coordinate calculation
+        // Pass timezone to ensure correct calculation
+        val coordinate = Coordinate(body, date, timezone)
         coordinate.formatAsSignDegree()
     }
 }

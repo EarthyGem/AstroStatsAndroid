@@ -95,15 +95,17 @@ class MainActivity : ComponentActivity() {
 
         val latitude = 32.7157
         val longitude = -117.1611
+        val timezone = "America/Los_Angeles" // Use explicit timezone
 
-        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate) // ✅ Add this
+        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate, timezone)
 
         val chartCake = ChartCake(
             birthDate = birthDate,
             latitude = latitude,
             longitude = longitude,
             transitDate = Date(),
-            houseCusps = houseCusps // ✅ Pass it here
+            houseCusps = houseCusps,
+            timezone = timezone // Pass timezone explicitly
         )
 
         val bodies = chartCake.natalBodies

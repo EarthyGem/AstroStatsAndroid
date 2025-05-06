@@ -17,15 +17,16 @@ data class Coordinate(
     val velocity: Double,
     val date: Date
 ) {
-    constructor(body: CelestialObject, date: Date) : this(
+    // Update the constructor to take timezone
+    constructor(body: CelestialObject, date: Date, timezone: String = TimeZone.getDefault().id) : this(
         body = body,
-        longitude = calculateCoordinateData(body, date).first,
-        declination = calculateCoordinateData(body, date).second,
-        velocity = calculateCoordinateData(body, date).third,
+        longitude = calculateCoordinateData(body, date, timezone).first,
+        declination = calculateCoordinateData(body, date, timezone).second,
+        velocity = calculateCoordinateData(body, date, timezone).third,
         date = date
     )
 
-    constructor(cusp: Cusp, date: Date) : this(
+    constructor(cusp: Cusp, date: Date, timezone: String = TimeZone.getDefault().id) : this(
         body = CelestialObject.Cusp(cusp),
         longitude = cusp.longitude,
         declination = 0.0,
@@ -49,8 +50,10 @@ data class Coordinate(
         /**
          * Calculate Julian Day from a Date object
          */
-        fun calculateJulianDay(date: Date): Double {
-            val calendar = Calendar.getInstance()
+
+        // Modify calculateJulianDay to use the provided timezone
+        fun calculateJulianDay(date: Date, timezone: String = TimeZone.getDefault().id): Double {
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
             calendar.time = date
             val timeZoneOffset = calendar.timeZone.getOffset(date.time)
             val offsetHours = timeZoneOffset / 3600000.0
@@ -90,19 +93,18 @@ data class Coordinate(
         /**
          * Calculate coordinate data (longitude, declination, velocity) for a celestial body
          */
-        private fun calculateCoordinateData(body: CelestialObject, date: Date): Triple<Double, Double, Double> {
-            val jd = calculateJulianDay(date)
+        private fun calculateCoordinateData(body: CelestialObject, date: Date, timezone: String): Triple<Double, Double, Double> {
+            val jd = calculateJulianDay(date, timezone)
             val id = sweIdForBody(body) ?: return Triple(0.0, 0.0, 0.0)
             val errorBuffer = StringBuffer()
 
-            // Ecliptic coordinates (for longitude + velocity)
+            // Calculate with timezone-aware Julian day
             val resultEcl = DoubleArray(6)
             swe.swe_calc(jd, id, SweConst.SEFLG_SWIEPH or SweConst.SEFLG_SPEED, resultEcl, errorBuffer)
             val rawLon = resultEcl[0]
             val velocity = resultEcl[3]
             val longitude = if (body == CelestialObject.SouthNode) (rawLon + 180.0) % 360 else rawLon
 
-            // Equatorial coordinates (for declination)
             val resultEq = DoubleArray(6)
             swe.swe_calc(jd, id, SweConst.SEFLG_SWIEPH or SweConst.SEFLG_SPEED or SweConst.SEFLG_EQUATORIAL, resultEq, errorBuffer)
             val declination = resultEq[1]
@@ -150,9 +152,9 @@ data class Coordinate(
         /**
          * Create a Coordinate for the Ascendant with proper declination calculation
          */
-        fun fromAscendant(cusp: Cusp, date: Date, geoLatitude: Double, geoLongitude: Double): Coordinate {
+        fun fromAscendant(cusp: Cusp, date: Date, geoLatitude: Double, geoLongitude: Double, timezone: String = TimeZone.getDefault().id): Coordinate {
             require(cusp.index == 1)
-            val jd = calculateJulianDay(date)
+            val jd = calculateJulianDay(date, timezone)
             val ascmc = DoubleArray(10)
             val cusps = DoubleArray(13)
             swe.swe_houses(jd, SweConst.SEFLG_SWIEPH, geoLatitude, geoLongitude, SweConst.SE_HSYS_PLACIDUS, cusps, ascmc)
@@ -176,9 +178,9 @@ data class Coordinate(
         /**
          * Create a Coordinate for the Midheaven with proper declination calculation
          */
-        fun fromMidheaven(cusp: Cusp, date: Date, geoLatitude: Double, geoLongitude: Double): Coordinate {
+        fun fromMidheaven(cusp: Cusp, date: Date, geoLatitude: Double, geoLongitude: Double, timezone: String = TimeZone.getDefault().id): Coordinate {
             require(cusp.index == 10)
-            val jd = calculateJulianDay(date)
+            val jd = calculateJulianDay(date, timezone)
             val ascmc = DoubleArray(10)
             val cusps = DoubleArray(13)
             swe.swe_houses(jd, SweConst.SEFLG_SWIEPH, geoLatitude, geoLongitude, SweConst.SE_HSYS_PLACIDUS, cusps, ascmc)

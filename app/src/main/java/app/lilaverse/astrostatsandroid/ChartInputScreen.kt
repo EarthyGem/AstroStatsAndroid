@@ -40,68 +40,6 @@ fun ChartInputScreen(
     onCancel: () -> Unit
 ) {
     val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        try {
-            if (!Places.isInitialized()) {
-                Places.initialize(context, "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8")
-                Log.d("ChartInputScreen", "Places API initialized successfully")
-            }
-        } catch (e: Exception) {
-            Log.e("ChartInputScreen", "Error initializing Places API: ${e.message}", e)
-        }
-    }
-    fun getTimezoneFromCoordinates(latitude: Double, longitude: Double, callback: (String) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Current timestamp in seconds
-                val timestamp = System.currentTimeMillis() / 1000
-
-                // Create URL for the API request
-                val apiKey = "YOUR_GOOGLE_TIMEZONE_API_KEY" // Replace with your API key
-                val url = URL("https://maps.googleapis.com/maps/api/timezone/json?location=$latitude,$longitude&timestamp=$timestamp&key=$apiKey")
-
-                // Make the request
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-
-                // Read the response
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val response = connection.inputStream.bufferedReader().use { it.readText() }
-                    val jsonResponse = JSONObject(response)
-
-                    // Get the timezone ID
-                    if (jsonResponse.getString("status") == "OK") {
-                        val timeZoneId = jsonResponse.getString("timeZoneId")
-
-                        // Run on main thread to update UI
-                        CoroutineScope(Dispatchers.Main).launch {
-                            callback(timeZoneId)
-                        }
-                    } else {
-                        Log.e("Timezone", "Error: ${jsonResponse.getString("status")}")
-                        // Fallback to default timezone
-                        CoroutineScope(Dispatchers.Main).launch {
-                            callback(TimeZone.getDefault().id)
-                        }
-                    }
-                } else {
-                    Log.e("Timezone", "HTTP Error: $responseCode")
-                    // Fallback to default timezone
-                    CoroutineScope(Dispatchers.Main).launch {
-                        callback(TimeZone.getDefault().id)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("Timezone", "Exception: ${e.message}")
-                // Fallback to default timezone
-                CoroutineScope(Dispatchers.Main).launch {
-                    callback(TimeZone.getDefault().id)
-                }
-            }
-        }
-    }
     val defaultCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles")).apply {
         set(1977, Calendar.MAY, 21, 13, 57)
     }
@@ -121,7 +59,93 @@ fun ChartInputScreen(
     var isSaving by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    var planetPositions by remember { mutableStateOf(getPlanetPositionsFor(selectedDateTime.time)) }
+    // Move the planetPositions declaration here, before any function uses it
+    var planetPositions by remember { mutableStateOf(getPlanetPositionsFor(selectedDateTime.time, timezone)) }
+
+    // Function declarations - moved to the top-level of the composable
+    fun fallbackToDeviceTimezone(callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            callback(TimeZone.getDefault().id)
+        }
+    }
+
+    fun updateSelectedDateTimeWithTimezone(newTimezone: String) {
+        // Get the currently selected date/time components (which are in the device's timezone)
+        val deviceCal = Calendar.getInstance()
+        deviceCal.time = selectedDateTime.time
+
+        // Create a new calendar with the birth location's timezone
+        val locationCal = Calendar.getInstance(TimeZone.getTimeZone(newTimezone))
+
+        // Copy the date components
+        locationCal.set(Calendar.YEAR, deviceCal.get(Calendar.YEAR))
+        locationCal.set(Calendar.MONTH, deviceCal.get(Calendar.MONTH))
+        locationCal.set(Calendar.DAY_OF_MONTH, deviceCal.get(Calendar.DAY_OF_MONTH))
+        locationCal.set(Calendar.HOUR_OF_DAY, deviceCal.get(Calendar.HOUR_OF_DAY))
+        locationCal.set(Calendar.MINUTE, deviceCal.get(Calendar.MINUTE))
+
+        // Update the selected date/time
+        selectedDateTime = locationCal
+
+        // Update the display text
+        val format = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+        format.timeZone = TimeZone.getTimeZone(newTimezone)
+        dateTimeText = format.format(selectedDateTime.time)
+
+        // Update planet positions with the new timezone
+        planetPositions = getPlanetPositionsFor(selectedDateTime.time, newTimezone)
+    }
+
+    fun getTimezoneFromCoordinates(latitude: Double, longitude: Double, callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Current timestamp in seconds
+                val timestamp = System.currentTimeMillis() / 1000
+
+                // Create URL for the API request
+                val apiKey = "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8" // Replace with your API key
+                val url = URL("https://maps.googleapis.com/maps/api/timezone/json?location=$latitude,$longitude&timestamp=$timestamp&key=$apiKey")
+
+                // Make the request
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+
+                // Read the response
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val jsonResponse = JSONObject(response)
+
+                    // Get the timezone ID
+                    if (jsonResponse.getString("status") == "OK") {
+                        val timeZoneId = jsonResponse.getString("timeZoneId")
+
+                        // Run on main thread to update UI
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback(timeZoneId)
+
+                            // If we have a date selected, update it to use this timezone
+                            if (dateTimeText.isNotBlank()) {
+                                updateSelectedDateTimeWithTimezone(timeZoneId)
+                            }
+                        }
+                    } else {
+                        Log.e("Timezone", "Error: ${jsonResponse.getString("status")}")
+                        // Fallback to default timezone
+                        fallbackToDeviceTimezone(callback)
+                    }
+                } else {
+                    Log.e("Timezone", "HTTP Error: $responseCode")
+                    // Fallback to default timezone
+                    fallbackToDeviceTimezone(callback)
+                }
+            } catch (e: Exception) {
+                Log.e("Timezone", "Exception: ${e.message}")
+                // Fallback to default timezone
+                fallbackToDeviceTimezone(callback)
+            }
+        }
+    }
 
     fun validateInputs(): Boolean {
         isNameError = name.isBlank()
@@ -130,9 +154,84 @@ fun ChartInputScreen(
         return !isNameError && !isPlaceError && !isDateTimeError
     }
 
-    fun getTimezoneFromLocation(lat: Double, lng: Double) {
-        val tz = TimeZone.getDefault()
-        timezone = tz.id
+    fun launchDateTimePicker() {
+        val now = Calendar.getInstance() // Device calendar for picker
+        DatePickerDialog(context, { _, year, month, day ->
+            TimePickerDialog(context, { _, hour, minute ->
+                // Get the selected timezone or default to device timezone
+                val tz = TimeZone.getTimeZone(timezone)
+
+                // Create calendar in the birth location's timezone
+                val cal = Calendar.getInstance(tz)
+                cal.set(year, month, day, hour, minute)
+
+                // Update our state
+                selectedDateTime = cal
+
+                // Format for display, showing it in the birth location's timezone
+                val format = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+                format.timeZone = tz
+                dateTimeText = format.format(cal.time)
+
+                // Update planet positions
+                planetPositions = getPlanetPositionsFor(cal.time, timezone)
+
+                isDateTimeError = false
+            }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), false).show()
+        }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
+    }
+
+    fun saveChart() {
+        if (!validateInputs()) {
+            errorMessage = "Please fill in all required fields"
+            return
+        }
+
+        try {
+            // Create a calendar in the birth location's timezone
+            val birthTimezone = TimeZone.getTimeZone(timezone)
+            val birthCalendar = Calendar.getInstance(birthTimezone)
+            birthCalendar.time = selectedDateTime.time
+
+            // Use this timezone-aware calendar for calculations
+            val sunCoord = Coordinate(CelestialObject.Planet(Planet.Sun), birthCalendar.time, timezone)
+            val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), birthCalendar.time, timezone)
+
+            val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthCalendar.time, timezone)
+            val ascCusp = houseCusps.getCusp(0)
+            val ascendantSign = Zodiac.signForDegree(ascCusp.longitude)
+
+            val chart = Chart(
+                name = name,
+                date = birthCalendar.time,
+                birthPlace = place,
+                locationName = place,
+                latitude = latitude,
+                longitude = longitude,
+                timezone = timezone,
+                planetaryPositions = getPlanetPositionsFor(birthCalendar.time, timezone),
+                sunSign = sunCoord.signName,
+                moonSign = moonCoord.signName,
+                risingSign = ascendantSign,
+                houseCusps = houseCusps
+            )
+            onSaveComplete(chart)
+        } catch (e: Exception) {
+            errorMessage = "Error calculating chart: ${e.message}"
+            Log.e("ChartInputScreen", "Error saving chart", e)
+            e.printStackTrace()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        try {
+            if (!Places.isInitialized()) {
+                Places.initialize(context, "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8")
+                Log.d("ChartInputScreen", "Places API initialized successfully")
+            }
+        } catch (e: Exception) {
+            Log.e("ChartInputScreen", "Error initializing Places API: ${e.message}", e)
+        }
     }
 
     val placeLauncher = rememberLauncherForActivityResult(
@@ -162,58 +261,8 @@ fun ChartInputScreen(
             }
         }
     }
-    fun saveChart() {
-        if (!validateInputs()) {
-            errorMessage = "Please fill in all required fields"
-            return
-        }
 
-        try {
-            // Create a calendar in the birth location's timezone
-            val birthCalendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
-            birthCalendar.timeInMillis = selectedDateTime.timeInMillis
-
-            // Use this calendar for planetary calculations
-            val sunCoord = Coordinate(CelestialObject.Planet(Planet.Sun), birthCalendar.time)
-            val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), birthCalendar.time)
-
-            val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthCalendar.time)
-            val ascCusp = houseCusps.getCusp(0)
-            val ascendantSign = Zodiac.signForDegree(ascCusp.longitude)
-
-            val chart = Chart(
-                name = name,
-                date = birthCalendar.time,
-                birthPlace = place,
-                locationName = place,
-                latitude = latitude,
-                longitude = longitude,
-                timezone = timezone,
-                planetaryPositions = getPlanetPositionsFor(birthCalendar.time),
-                sunSign = sunCoord.signName,
-                moonSign = moonCoord.signName,
-                risingSign = ascendantSign,
-                houseCusps = houseCusps
-            )
-            onSaveComplete(chart)
-        } catch (e: Exception) {
-            errorMessage = "Error calculating chart: ${e.message}"
-            e.printStackTrace()
-        }
-    }
-    fun launchDateTimePicker() {
-        val now = Calendar.getInstance()
-        DatePickerDialog(context, { _, year, month, day ->
-            TimePickerDialog(context, { _, hour, minute ->
-                selectedDateTime.set(year, month, day, hour, minute)
-                val format = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
-                dateTimeText = format.format(selectedDateTime.time)
-                isDateTimeError = false
-                planetPositions = getPlanetPositionsFor(selectedDateTime.time)
-            }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), false).show()
-        }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
-    }
-
+    // UI starts here
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -242,7 +291,6 @@ fun ChartInputScreen(
                 unfocusedContainerColor = Color(0xFF252542)
             )
         )
-
 
         if (isNameError) Text("Name is required", color = Color.Red, fontSize = 12.sp)
         Spacer(modifier = Modifier.height(12.dp))

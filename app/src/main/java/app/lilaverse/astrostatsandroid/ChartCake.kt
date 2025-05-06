@@ -3,13 +3,15 @@ package app.lilaverse.astrostatsandroid
 import swisseph.SwissEph
 import java.util.Date
 import app.lilaverse.astrostatsandroid.model.Chart
+import java.util.TimeZone
 
 class ChartCake(
     val birthDate: Date,
     val latitude: Double,
     val longitude: Double,
     val transitDate: Date,
-    val houseCusps: HouseCusps
+    val houseCusps: HouseCusps,
+    val timezone: String = TimeZone.getDefault().id
 ) {
     private val swe = SwissEph()
 
@@ -32,14 +34,16 @@ class ChartCake(
             cusp = houseCusps.getCusp(0),
             date = birthDate,
             geoLatitude = latitude,
-            geoLongitude = longitude
+            geoLongitude = longitude,
+            timezone = timezone
         )
 
         val mc = Coordinate.fromMidheaven(
             cusp = houseCusps.getCusp(9),
             date = birthDate,
             geoLatitude = latitude,
-            geoLongitude = longitude
+            geoLongitude = longitude,
+            timezone = timezone
         )
 
         planets + asc + mc
