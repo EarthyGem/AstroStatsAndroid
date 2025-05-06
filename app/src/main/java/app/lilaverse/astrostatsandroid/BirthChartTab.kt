@@ -17,16 +17,47 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import app.lilaverse.astrostatsandroid.HouseCusps
 import java.text.SimpleDateFormat
+import androidx.compose.ui.viewinterop.AndroidView
+import app.lilaverse.astrostatsandroid.view.BirthChartView
+import app.lilaverse.astrostatsandroid.view.Planet
 import java.util.Locale
 
 
+
+
+
 @Composable
-fun BirthChartTab(
-    chart: Chart,
-    strongestPlanet: String = "Moon",
-    strongestSign: String = "Aries",
-    strongestHouse: String = "8th House"
-) {
+fun BirthChartTab(chart: Chart) {
+    // Calculate strongest elements
+    val chartCake = ChartCake.from(chart)
+    val totalPowerScores = PlanetStrengthCalculator(
+        orbDictionary,
+        houseProvider = { chartCake.houseCusps.houseForLongitude(it.longitude) },
+        luminaryChecker = { it.body.keyName in listOf("Sun", "Moon") },
+        houseCuspsProvider = { lon ->
+            val houseNum = chartCake.houseCusps.houseForLongitude(lon)
+            val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude
+            HouseCusp(houseNum, cuspLon)
+        },
+        houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
+    ).getTotalPowerScoresForPlanetsCo(chartCake.bodies)
+
+    val signScores = SignStrengthCalculator(chartCake, totalPowerScores).calculateTotalSignScores()
+    val houseScores = HouseStrengthCalculator(chartCake, totalPowerScores).calculateHouseStrengths()
+
+    // Find strongest planet
+    val strongestPlanet = totalPowerScores.entries
+        .maxByOrNull { it.value }?.key?.body?.keyName ?: "Moon"
+
+    // Find strongest sign
+    val strongestSign = signScores.entries
+        .maxByOrNull { it.value }?.key?.name ?: "Aries"
+
+    // Find strongest house
+    val strongestHouseNumber = houseScores.entries
+        .maxByOrNull { it.value }?.key ?: 8
+    val strongestHouse = "${strongestHouseNumber}th House"
+
     // Get the glyphs and colors for the signs
     val sunGlyph = Zodiac.fromName(chart.sunSign)?.glyph ?: ""
     val moonGlyph = Zodiac.fromName(chart.moonSign)?.glyph ?: ""
@@ -233,15 +264,35 @@ fun BirthChartTab(
 
         Spacer(Modifier.height(24.dp))
 
-        // Chart wheel placeholder
-        Box(
+        // Chart wheel
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
-                .background(Color.White.copy(alpha = 0.05f), RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center
+                .aspectRatio(1f),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Text("Birth Chart Wheel", color = Color.Gray)
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    BirthChartView(context).apply {
+                        // Create planet objects from the chart's planetary positions
+                        planets = chart.planetaryPositions.mapNotNull { line ->
+                            val parts = line.trim().split(" ")
+                            if (parts.size >= 2) {
+                                val glyph = parts[0]
+                                val degree = parts.getOrNull(1)?.toDoubleOrNull() ?: return@mapNotNull null
+                                Planet(name = "", glyph = glyph, degree = degree)
+                            } else null
+                        }
+                        // Set house cusps
+                        houseCusps = chart.houseCusps.allCusps().map { it.longitude }
+
+                        // Alternatively, you can use the ChartCake directly if you prefer
+                        // setChart(chartCake)
+                    }
+                }
+            )
         }
     }
 }
@@ -257,9 +308,14 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
     )
 
     val sortedScores = when (selectedSort) {
-        0 -> planetScores.sortedByDescending { it.second }
+        0 -> planetScores.sortedByDescending { it.third }
         else -> planetScores.sortedBy { conventionalOrder.indexOf(it.first.keyName) }
     }
+
+    // Calculate total score for proper percentage calculation
+    val totalScore = planetScores.sumOf { it.third.toDouble() }
+    // Find maximum score for scaling the bars appropriately
+    val maxScore = planetScores.maxOfOrNull { it.third } ?: 1f
 
     val planetColors = mapOf(
         "Sun" to Color(0xFFFFA500),
@@ -298,7 +354,7 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
 
         Spacer(Modifier.height(12.dp))
 
-        sortedScores.forEach { (obj, percent, score) ->
+        sortedScores.forEach { (obj, _, score) ->
             val (name, symbol) = when {
                 obj is CelestialObject.Planet -> obj.planet.keyName to obj.planet.symbol
                 obj is CelestialObject.SpecialCusp && obj.name == "Ascendant" -> "Ascendant" to "↑"
@@ -309,6 +365,9 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
             }
 
             val color = planetColors[name] ?: Color.Gray
+
+            // Calculate the actual percentage relative to total score
+            val actualPercent = (score / totalScore * 100).toFloat()
 
             Row(
                 Modifier
@@ -349,12 +408,12 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
                     Box(
                         Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(percent / 15f)
+                            .fillMaxWidth(score / maxScore)
                             .background(color),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = "${percent}%",
+                            text = "%.1f%%".format(actualPercent),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp),
                             color = Color.White
@@ -378,9 +437,14 @@ fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
     val sortOptions = listOf("By Strength", "Conventional")
 
     val sortedScores = when (selectedSort) {
-        0 -> signTriples.sortedByDescending { it.second }
+        0 -> signTriples.sortedByDescending { it.third }
         else -> signTriples // Conventional = default order
     }
+
+    // Calculate total score for proper percentage calculation
+    val totalScore = signTriples.sumOf { it.third.toDouble() }
+    // Find maximum score for scaling the bars appropriately
+    val maxScore = signTriples.maxOfOrNull { it.third } ?: 1f
 
     val signColors = mapOf(
         "Aries" to Color(0xFFFF6347),     // light Mars
@@ -417,9 +481,12 @@ fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
 
         Spacer(Modifier.height(12.dp))
 
-        sortedScores.forEach { (sign, percent, score) ->
+        sortedScores.forEach { (sign, _, score) ->
             val color = signColors[sign.name] ?: Color.Gray
             val glyph = sign.glyph
+
+            // Calculate the actual percentage relative to total score
+            val actualPercent = (score / totalScore * 100).toFloat()
 
             Row(
                 Modifier
@@ -441,12 +508,12 @@ fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
                     Box(
                         Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(percent / 15f)
+                            .fillMaxWidth(score / maxScore)
                             .background(color),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = "${percent}%",
+                            text = "%.1f%%".format(actualPercent),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp),
                             color = Color.White
@@ -476,9 +543,14 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
     )
 
     val sortedScores = when (selectedSort) {
-        0 -> houseTriples.sortedByDescending { it.second } // by strength %
+        0 -> houseTriples.sortedByDescending { it.third }
         else -> houseTriples // leave as is for conventional order
     }
+
+    // Calculate total score for proper percentage calculation
+    val totalScore = houseTriples.sumOf { it.third.toDouble() }
+    // Find maximum score for scaling the bars appropriately
+    val maxScore = houseTriples.maxOfOrNull { it.third } ?: 1f
 
     val houseColors = mapOf(
         "1st House" to Color(0xFFFF6347),    // Aries color
@@ -494,6 +566,7 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
         "11th House" to Color(0xFF00FFFF),   // Aquarius color
         "12th House" to Color(0xFF87CEFA)    // Pisces color
     )
+
     Column(Modifier.padding(16.dp)) {
         Text("House Scores", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
@@ -515,9 +588,12 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
 
         Spacer(Modifier.height(12.dp))
 
-        sortedScores.forEach { (name, percent, score) ->
+        sortedScores.forEach { (name, _, score) ->
             val color = houseColors[name] ?: Color.Gray
             val glyph = houseGlyphs[name] ?: ""
+
+            // Calculate the actual percentage relative to total score
+            val actualPercent = (score / totalScore * 100).toFloat()
 
             Row(
                 Modifier
@@ -539,12 +615,12 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
                     Box(
                         Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(percent / 15f)
+                            .fillMaxWidth(score / maxScore)
                             .background(color),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = "${percent}%",
+                            text = "%.1f%%".format(actualPercent),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp),
                             color = Color.White
@@ -573,9 +649,14 @@ fun AspectScoresTab(aspectTriples: List<Triple<Kind, Float, Float>>) {
     )
 
     val sortedScores = when (selectedSort) {
-        0 -> aspectTriples.sortedByDescending { it.second }
+        0 -> aspectTriples.sortedByDescending { it.third }
         else -> aspectTriples.sortedBy { conventionalAspectOrder.indexOf(it.first) }
     }
+
+    // Calculate total score for proper percentage calculation
+    val totalScore = aspectTriples.sumOf { it.third.toDouble() }
+    // Find maximum score for scaling the bars appropriately
+    val maxScore = aspectTriples.maxOfOrNull { it.third } ?: 1f
 
     val aspectColors = mapOf(
         Kind.Conjunction to Color(0xFFBA55D3),
@@ -611,9 +692,12 @@ fun AspectScoresTab(aspectTriples: List<Triple<Kind, Float, Float>>) {
 
         Spacer(Modifier.height(12.dp))
 
-        sortedScores.forEach { (kind, percent, score) ->
+        sortedScores.forEach { (kind, _, score) ->
             val color = aspectColors[kind] ?: Color.Gray
             val glyph = kind.symbol
+
+            // Calculate the actual percentage relative to total score
+            val actualPercent = (score / totalScore * 100).toFloat()
 
             Row(
                 Modifier
@@ -635,12 +719,12 @@ fun AspectScoresTab(aspectTriples: List<Triple<Kind, Float, Float>>) {
                     Box(
                         Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(percent / 15f)
+                            .fillMaxWidth(score / maxScore)
                             .background(color),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = "${percent}%",
+                            text = "%.1f%%".format(actualPercent),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp),
                             color = Color.White

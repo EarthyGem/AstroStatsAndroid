@@ -58,26 +58,6 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
         ).totalScoresByAspectType(chartCake.bodies)
     }
 
-    // Find strongest elements
-    val strongestPlanet = remember(totalPowerScores) {
-        totalPowerScores.entries
-            .filter { it.key.body is CelestialObject.Planet }
-            .maxByOrNull { it.value }
-            ?.key?.body?.keyName ?: "Sun"
-    }
-
-    val strongestSign = remember(signScores) {
-        signScores.entries
-            .maxByOrNull { it.value }
-            ?.key?.name ?: "Aries"
-    }
-
-    val strongestHouse = remember(houseScores) {
-        houseScores.entries
-            .maxByOrNull { it.value }
-            ?.key?.toString() ?: "1"
-    }
-
     // Normalized for display
     val planetTriples = totalPowerScores.entries.map {
         val max = totalPowerScores.values.maxOrNull() ?: 1.0
@@ -114,12 +94,7 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
         Spacer(Modifier.height(8.dp))
 
         when (selectedTab) {
-            0 -> BirthChartTab(
-                chart = chart,
-                strongestPlanet = strongestPlanet,
-                strongestSign = strongestSign,
-                strongestHouse = "${strongestHouse}th House"
-            )
+            0 -> BirthChartTab(chart)
             1 -> PlanetScoresTab(planetTriples, chartCake.houseCusps)
             2 -> SignScoresTab(signTriples)
             3 -> HouseScoresTab(houseTriples)

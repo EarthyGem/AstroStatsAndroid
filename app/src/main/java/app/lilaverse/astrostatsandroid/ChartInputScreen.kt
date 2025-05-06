@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import app.lilaverse.astrostatsandroid.HouseCuspBuilder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -21,11 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lilaverse.astrostatsandroid.model.Chart
+import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import org.json.JSONObject
+import java.net.URL
+import java.net.HttpURLConnection
 
 @Composable
 fun ChartInputScreen(
@@ -34,17 +41,75 @@ fun ChartInputScreen(
 ) {
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        try {
+            if (!Places.isInitialized()) {
+                Places.initialize(context, "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8")
+                Log.d("ChartInputScreen", "Places API initialized successfully")
+            }
+        } catch (e: Exception) {
+            Log.e("ChartInputScreen", "Error initializing Places API: ${e.message}", e)
+        }
+    }
+    fun getTimezoneFromCoordinates(latitude: Double, longitude: Double, callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Current timestamp in seconds
+                val timestamp = System.currentTimeMillis() / 1000
+
+                // Create URL for the API request
+                val apiKey = "YOUR_GOOGLE_TIMEZONE_API_KEY" // Replace with your API key
+                val url = URL("https://maps.googleapis.com/maps/api/timezone/json?location=$latitude,$longitude&timestamp=$timestamp&key=$apiKey")
+
+                // Make the request
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+
+                // Read the response
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val jsonResponse = JSONObject(response)
+
+                    // Get the timezone ID
+                    if (jsonResponse.getString("status") == "OK") {
+                        val timeZoneId = jsonResponse.getString("timeZoneId")
+
+                        // Run on main thread to update UI
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback(timeZoneId)
+                        }
+                    } else {
+                        Log.e("Timezone", "Error: ${jsonResponse.getString("status")}")
+                        // Fallback to default timezone
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback(TimeZone.getDefault().id)
+                        }
+                    }
+                } else {
+                    Log.e("Timezone", "HTTP Error: $responseCode")
+                    // Fallback to default timezone
+                    CoroutineScope(Dispatchers.Main).launch {
+                        callback(TimeZone.getDefault().id)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Timezone", "Exception: ${e.message}")
+                // Fallback to default timezone
+                CoroutineScope(Dispatchers.Main).launch {
+                    callback(TimeZone.getDefault().id)
+                }
+            }
+        }
+    }
     val defaultCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles")).apply {
         set(1977, Calendar.MAY, 21, 13, 57)
     }
 
-    var name by remember { mutableStateOf("Ricky") }
-    var place by remember { mutableStateOf("San Diego, CA") }
-    var dateTimeText by remember {
-        mutableStateOf(
-            SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault()).format(defaultCalendar.time)
-        )
-    }
+    var name by remember { mutableStateOf("") }
+    var place by remember { mutableStateOf("") }
+    var dateTimeText by remember { mutableStateOf("") }
+
     var selectedDateTime by remember { mutableStateOf(defaultCalendar) }
     var latitude by remember { mutableStateOf(32.7157) }
     var longitude by remember { mutableStateOf(-117.1611) }
@@ -74,19 +139,29 @@ fun ChartInputScreen(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            val placeResult = Autocomplete.getPlaceFromIntent(data!!)
-            place = placeResult.name ?: ""
-            placeResult.latLng?.let {
-                latitude = it.latitude
-                longitude = it.longitude
-                getTimezoneFromLocation(latitude, longitude)
+            try {
+                val data = result.data
+                if (data != null) {
+                    val placeResult = Autocomplete.getPlaceFromIntent(data)
+                    place = placeResult.name ?: ""
+                    placeResult.latLng?.let {
+                        latitude = it.latitude
+                        longitude = it.longitude
+
+                        // Get timezone from Google Time Zone API
+                        getTimezoneFromCoordinates(latitude, longitude) { timeZoneId ->
+                            timezone = timeZoneId
+                            Log.d("ChartInputScreen", "Retrieved timezone: $timezone")
+                        }
+                    }
+                    isPlaceError = false
+                }
+            } catch (e: Exception) {
+                Log.e("ChartInputScreen", "Error processing place result: ${e.message}", e)
+                errorMessage = "Error selecting place: ${e.message}"
             }
-            isPlaceError = false
         }
     }
-
-    // In your ChartInputScreen.kt file, modify the saveChart() function:
     fun saveChart() {
         if (!validateInputs()) {
             errorMessage = "Please fill in all required fields"
@@ -94,41 +169,38 @@ fun ChartInputScreen(
         }
 
         try {
-            // Calculate planetary coordinates
-            val sunCoord = Coordinate(CelestialObject.Planet(Planet.Sun), selectedDateTime.time)
-            val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), selectedDateTime.time)
+            // Create a calendar in the birth location's timezone
+            val birthCalendar = Calendar.getInstance(TimeZone.getTimeZone(timezone))
+            birthCalendar.timeInMillis = selectedDateTime.timeInMillis
 
-            // Fallback: hardcoded rising sign as placeholder
+            // Use this calendar for planetary calculations
+            val sunCoord = Coordinate(CelestialObject.Planet(Planet.Sun), birthCalendar.time)
+            val moonCoord = Coordinate(CelestialObject.Planet(Planet.Moon), birthCalendar.time)
 
-            // Calculate house cusps
-            val houseCusps = HouseCuspBuilder.create(latitude, longitude, selectedDateTime.time)
-
-// Calculate Ascendant (Rising Sign)
-            val ascCusp = houseCusps.getCusp(0) // First house cusp
+            val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthCalendar.time)
+            val ascCusp = houseCusps.getCusp(0)
             val ascendantSign = Zodiac.signForDegree(ascCusp.longitude)
 
             val chart = Chart(
                 name = name,
-                date = selectedDateTime.time,
+                date = birthCalendar.time,
                 birthPlace = place,
                 locationName = place,
                 latitude = latitude,
                 longitude = longitude,
                 timezone = timezone,
-                planetaryPositions = planetPositions,
+                planetaryPositions = getPlanetPositionsFor(birthCalendar.time),
                 sunSign = sunCoord.signName,
                 moonSign = moonCoord.signName,
-                risingSign = ascendantSign, // Use the calculated rising sign
+                risingSign = ascendantSign,
                 houseCusps = houseCusps
             )
             onSaveComplete(chart)
-
         } catch (e: Exception) {
             errorMessage = "Error calculating chart: ${e.message}"
             e.printStackTrace()
         }
     }
-
     fun launchDateTimePicker() {
         val now = Calendar.getInstance()
         DatePickerDialog(context, { _, year, month, day ->
@@ -158,6 +230,7 @@ fun ChartInputScreen(
                 isNameError = false
             },
             label = { Text("Name", color = Color.White) },
+            placeholder = { Text("e.g. Julie", color = Color.Gray) },
             textStyle = TextStyle(color = Color.White),
             isError = isNameError,
             singleLine = true,
@@ -169,16 +242,30 @@ fun ChartInputScreen(
                 unfocusedContainerColor = Color(0xFF252542)
             )
         )
+
+
         if (isNameError) Text("Name is required", color = Color.Red, fontSize = 12.sp)
         Spacer(modifier = Modifier.height(12.dp))
 
         Text("Birthplace", fontSize = 14.sp, color = Color.White, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+
         Box(
-            modifier = Modifier.fillMaxWidth().clickable {
-                val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
-                val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields).build(context)
-                placeLauncher.launch(intent)
-            }
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    try {
+                        if (!Places.isInitialized()) {
+                            Places.initialize(context, "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8")
+                        }
+
+                        val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
+                        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields).build(context)
+                        placeLauncher.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e("ChartInputScreen", "Error launching place picker: ${e.message}", e)
+                        errorMessage = "Error launching place picker: ${e.message}"
+                    }
+                }
         ) {
             OutlinedTextField(
                 value = place,
@@ -197,11 +284,14 @@ fun ChartInputScreen(
                 )
             )
         }
+
         if (isPlaceError) Text("Birthplace is required", color = Color.Red, fontSize = 12.sp)
         Spacer(modifier = Modifier.height(12.dp))
 
         Text("Birth Date & Time", fontSize = 14.sp, color = Color.White, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
-        Box(modifier = Modifier.fillMaxWidth().clickable { launchDateTimePicker() }) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { launchDateTimePicker() }) {
             OutlinedTextField(
                 value = dateTimeText,
                 onValueChange = {},
@@ -234,7 +324,9 @@ fun ChartInputScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Text("Planetary Positions", fontSize = 20.sp, color = Color.White)
         Card(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF202040))
         ) {
             Column(modifier = Modifier.padding(12.dp)) {

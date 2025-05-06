@@ -118,7 +118,6 @@ class PlanetStrengthCalculator(
         }
     }
 
-
     fun getHouseScoreForPlanetsCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
         return bodies.associateWith { getHouseScore(it) }
     }
@@ -165,8 +164,11 @@ class PlanetStrengthCalculator(
     fun allCelestialAspectScoresByAspect(bodies: List<Coordinate>): Map<CelestialAspect, Double> {
         val scoreDict = mutableMapOf<CelestialAspect, Double>()
         val aspects = allRickysNatalAspects(bodies)
+
+        // Separate processing for parallels vs regular aspects
         val (parallels, nonParallels) = aspects.partition { it.kind == Kind.Parallel }
 
+        // Process parallels using Swift-like implementation
         for (aspect in parallels) {
             val p1 = aspect.body1
             val p2 = aspect.body2
@@ -175,22 +177,21 @@ class PlanetStrengthCalculator(
             val isLum1 = luminaryChecker(p1)
             val isLum2 = luminaryChecker(p2)
 
-            val maxOrb = getParallelOrbCategory(h1, h2, isLum1, isLum2)
+            val assignedOrb = getParallelOrbCategory(h1, h2, isLum1, isLum2)
+            val actualOrb = aspect.orbDelta
 
-            val decl1 = abs(p1.declination)
-            val decl2 = abs(p2.declination)
-            val actualOrb = abs(decl1 - decl2)
-
-            val score = (1 - actualOrb) * maxOrb
+            // Score calculation matching Swift implementation: (1 - actualOrb) * assignedOrb
+            val score = (1.0 - actualOrb) * assignedOrb
 
             Log.d(
                 "AspectParallel",
-                "💠 ${p1.body.keyName}-${p2.body.keyName}: | Dec1=$decl1 | Dec2=$decl2 | Orb=$actualOrb | MaxOrb=$maxOrb | Score=$score"
+                "💠 ${p1.body.keyName}-${p2.body.keyName}: | Dec1=${abs(p1.declination)} | Dec2=${abs(p2.declination)} | " +
+                        "Orb=$actualOrb | AssignedOrb=$assignedOrb | Score=$score"
             )
             scoreDict[aspect] = score
         }
 
-
+        // Process non-parallel aspects
         for (aspect in nonParallels) {
             val p1 = aspect.body1
             val p2 = aspect.body2
@@ -228,6 +229,7 @@ class PlanetStrengthCalculator(
         }
         return aspects
     }
+
     fun totalScoresByAspectType(bodies: List<Coordinate>): List<Pair<Kind, Double>> {
         val scoresByAspect = allCelestialAspectScoresByAspect(bodies)
 
@@ -246,33 +248,53 @@ class PlanetStrengthCalculator(
     fun allParallelAspects(bodies: List<Coordinate>): List<CelestialAspect> {
         val orb = 1.0
         val parallels = mutableListOf<CelestialAspect>()
+        val processedPairs = mutableSetOf<Pair<String, String>>() // To track processed pairs
 
         for (i in bodies.indices) {
             val b1 = bodies[i]
             for (j in i + 1 until bodies.size) {
                 val b2 = bodies[j]
 
+                // Create a unique key for this pair
+                val bodyKey1 = b1.body.keyName
+                val bodyKey2 = b2.body.keyName
+                val pairKey = if (bodyKey1 < bodyKey2)
+                    Pair(bodyKey1, bodyKey2)
+                else
+                    Pair(bodyKey2, bodyKey1)
+
+                // Skip if already processed
+                if (processedPairs.contains(pairKey)) continue
+                processedPairs.add(pairKey)
+
+                // Use absolute values of declination for comparison
                 val dec1Abs = abs(b1.declination)
                 val dec2Abs = abs(b2.declination)
                 val orbDelta = abs(dec1Abs - dec2Abs)
 
                 if (orbDelta <= orb) {
-                    val aspect = CelestialAspect.fromCoordinates(b1, b2, orb)
-                    if (aspect != null) {
-                        aspect.kind = Kind.Parallel // Treat both parallel and contraparallel identically
-                        parallels.add(aspect)
-                        Log.d(
-                            "AspectParallel",
-                            "💠 ${b1.body.keyName}-${b2.body.keyName}: | Dec1=${b1.declination} | Dec2=${b2.declination} | Orb=$orbDelta"
-                        )
-                    }
+                    // Create the aspect with Kind.Parallel - the orbDelta will be calculated by the getter
+                    val aspect = CelestialAspect(
+                        kind = Kind.Parallel,
+                        body1 = b1,
+                        body2 = b2,
+                        angle = 0.0,  // Parallels use declination not longitude
+                        orb = orb,
+                        type = CelestialAspect.TypeAspect.Applying  // Default to applying
+                    )
+
+                    parallels.add(aspect)
+
+                    Log.d(
+                        "AspectParallel",
+                        "💠 ${b1.body.keyName}-${b2.body.keyName}: | Dec1=${b1.declination} | Dec2=${b2.declination} | Orb=$orbDelta"
+                    )
                 }
             }
         }
 
         return parallels
     }
-
 
     fun getOrbCategory(p1: Coordinate, p2: Coordinate): Pair<Double, CelestialAspect>? {
         if (p1 == p2) return null
@@ -295,14 +317,26 @@ class PlanetStrengthCalculator(
         return null
     }
 
+    // Updated to match Swift implementation
     private fun getParallelOrbCategory(h1: Int, h2: Int, isLum1: Boolean, isLum2: Boolean): Double {
         val cat1 = listOf("angular", "succedent", "cadent")[(h1 - 1) % 3]
         val cat2 = listOf("angular", "succedent", "cadent")[(h2 - 1) % 3]
-        val prefix1 = if (isLum1) "lum_${cat1}" else cat1
-        val prefix2 = if (isLum2) "lum_${cat2}" else cat2
-        return maxOf(
-            orbDictionary["${prefix1}_parallel"] ?: 1.0,
-            orbDictionary["${prefix2}_parallel"] ?: 1.0
+        val prefix1 = if (isLum1) "lum_$cat1" else cat1
+        val prefix2 = if (isLum2) "lum_$cat2" else cat2
+
+        // Match Swift implementation values
+        val orbScores = mapOf(
+            "cadent_parallel" to 8.0,
+            "angular_parallel" to 12.0,
+            "lum_succedent_parallel" to 13.0,
+            "lum_cadent_parallel" to 11.0,
+            "lum_angular_parallel" to 15.0,
+            "succedent_parallel" to 10.0
         )
+
+        val orb1 = orbScores["${prefix1}_parallel"] ?: 0.0
+        val orb2 = orbScores["${prefix2}_parallel"] ?: 0.0
+
+        return maxOf(orb1, orb2)
     }
 }

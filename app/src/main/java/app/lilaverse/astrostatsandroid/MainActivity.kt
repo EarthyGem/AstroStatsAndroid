@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        runPlanetStrengthTest()
         setContent {
             val context = LocalContext.current
             val chartDao = remember { ChartDatabase.getDatabase(context).chartDao() }
@@ -88,100 +88,100 @@ class MainActivity : ComponentActivity() {
 
 
 
-//    private fun runPlanetStrengthTest() {
-//        val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
-//        calendar.set(1977, Calendar.MAY, 21, 13, 57, 0)
-//        val birthDate = calendar.time
-//
-//        val latitude = 32.7157
-//        val longitude = -117.1611
-//
-//        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate) // ✅ Add this
-//
-//        val chartCake = ChartCake(
-//            birthDate = birthDate,
-//            latitude = latitude,
-//            longitude = longitude,
-//            transitDate = Date(),
-//            houseCusps = houseCusps // ✅ Pass it here
-//        )
-//
-//        val bodies = chartCake.natalBodies
-//
-//        val calculator = PlanetStrengthCalculator(
-//            orbDictionary = orbDictionary,
-//            houseProvider = { coord ->
-//                chartCake.houseCusps.houseForLongitude(coord.longitude)
-//            },
-//            luminaryChecker = { it.body.keyName == "Sun" || it.body.keyName == "Moon" },
-//            houseCuspsProvider = { lon ->
-//                val houseIndex = chartCake.houseCusps.houseForLongitude(lon)
-//                val cusp = chartCake.houseCusps.getCusp(houseIndex)
-//                HouseCusp(cusp.index, cusp.longitude)
-//            },
-//            houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
-//        )
-//
-//        // 🪐 Aspect + House Score Calculation
-//        val aspectScores = calculator.allCelestialAspectScoresCo(bodies)
-//        val houseScores = calculator.getHouseScoreForPlanetsCo(bodies)
-//
-//        Log.d("PlanetStrength", "🪐 Planet Strength Breakdown (Aspect + House + Total):")
-//        val planetsSorted = bodies.sortedByDescending {
-//            (aspectScores[it] ?: 0.0) + (houseScores[it] ?: 0.0)
-//        }
-//
-//        for (planet in planetsSorted) {
-//            val name = planet.body.keyName.padEnd(12)
-//            val aspect = aspectScores[planet] ?: 0.0
-//            val house = houseScores[planet] ?: 0.0
-//            val total = aspect + house
-//            Log.d(
-//                "PlanetStrength",
-//                "$name → Aspect: %.2f | House: %.2f | Total: %.2f".format(aspect, house, total)
-//            )
-//        }
-//
-//        // 📡 Total Planet Power Scores
-//        val totalScores = calculator.getTotalPowerScoresForPlanetsCo(bodies)
-//        Log.d("PlanetStrength", "📡 Total Planet Power Scores:")
-//        totalScores.entries.sortedByDescending { it.value }.forEach { (planet, score) ->
-//            Log.d("PlanetStrength", "${planet.body.keyName.padEnd(12)} → Total: %.2f".format(score))
-//        }
-//
-//        // 🏠 Planet House Placements
-//        Log.d("PlanetHouse", "🏠 Planet House Placements:")
-//        for (planet in bodies) {
-//            val name = planet.body.keyName.padEnd(12)
-//            val lon = "%.2f".format(planet.longitude)
-//            val house = chartCake.houseCusps.houseForLongitude(planet.longitude)
-//            Log.d("PlanetHouse", "$name → Lon: $lon° falls in House $house")
-//        }
-//
-//        // 🔮 Sign Strength Calculation
-//        val signStrengthCalc = SignStrengthCalculator(chartCake, totalScores)
-//        val signScores = signStrengthCalc.calculateTotalSignScores()
-//
-//        Log.d("SignStrength", "🔮 Total Sign Strength Scores:")
-//        signScores.entries.sortedByDescending { it.value }.forEach { (sign, score) ->
-//            Log.d("SignStrength", "${sign.name.padEnd(10)} → Score: %.2f".format(score))
-//
-//            // 🏛️ House Strength Scores
-//            val houseStrengthCalc = HouseStrengthCalculator(chartCake, totalScores)
-//            val houseScores = houseStrengthCalc.calculateHouseStrengths()
-//
-//            Log.d("HouseStrength", "🏛️ Total House Strength Scores:")
-//            houseScores.entries.sortedByDescending { it.value }.forEach { (house, score) ->
-//                Log.d("HouseStrength", "House $house → Score: %.2f".format(score))
-//                val aspectKindScores = calculator.totalScoresByAspectType(bodies)
-//                Log.d("AspectKindScores", "🎯 Aspect Scores by Type:")
-//                aspectKindScores.forEach { (kind, total) ->
-//                    Log.d("AspectKindScores", "${kind.name}: %.2f".format(total))
-//                }
-//
-//            }
-//
-//
-//        }
-//    }
+    private fun runPlanetStrengthTest() {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+        calendar.set(1977, Calendar.MAY, 21, 13, 57, 0)
+        val birthDate = calendar.time
+
+        val latitude = 32.7157
+        val longitude = -117.1611
+
+        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate) // ✅ Add this
+
+        val chartCake = ChartCake(
+            birthDate = birthDate,
+            latitude = latitude,
+            longitude = longitude,
+            transitDate = Date(),
+            houseCusps = houseCusps // ✅ Pass it here
+        )
+
+        val bodies = chartCake.natalBodies
+
+        val calculator = PlanetStrengthCalculator(
+            orbDictionary = orbDictionary,
+            houseProvider = { coord ->
+                chartCake.houseCusps.houseForLongitude(coord.longitude)
+            },
+            luminaryChecker = { it.body.keyName == "Sun" || it.body.keyName == "Moon" },
+            houseCuspsProvider = { lon ->
+                val houseIndex = chartCake.houseCusps.houseForLongitude(lon)
+                val cusp = chartCake.houseCusps.getCusp(houseIndex)
+                HouseCusp(cusp.index, cusp.longitude)
+            },
+            houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
+        )
+
+        // 🪐 Aspect + House Score Calculation
+        val aspectScores = calculator.allCelestialAspectScoresCo(bodies)
+        val houseScores = calculator.getHouseScoreForPlanetsCo(bodies)
+
+        Log.d("PlanetStrength", "🪐 Planet Strength Breakdown (Aspect + House + Total):")
+        val planetsSorted = bodies.sortedByDescending {
+            (aspectScores[it] ?: 0.0) + (houseScores[it] ?: 0.0)
+        }
+
+        for (planet in planetsSorted) {
+            val name = planet.body.keyName.padEnd(12)
+            val aspect = aspectScores[planet] ?: 0.0
+            val house = houseScores[planet] ?: 0.0
+            val total = aspect + house
+            Log.d(
+                "PlanetStrength",
+                "$name → Aspect: %.2f | House: %.2f | Total: %.2f".format(aspect, house, total)
+            )
+        }
+
+        // 📡 Total Planet Power Scores
+        val totalScores = calculator.getTotalPowerScoresForPlanetsCo(bodies)
+        Log.d("PlanetStrength", "📡 Total Planet Power Scores:")
+        totalScores.entries.sortedByDescending { it.value }.forEach { (planet, score) ->
+            Log.d("PlanetStrength", "${planet.body.keyName.padEnd(12)} → Total: %.2f".format(score))
+        }
+
+        // 🏠 Planet House Placements
+        Log.d("PlanetHouse", "🏠 Planet House Placements:")
+        for (planet in bodies) {
+            val name = planet.body.keyName.padEnd(12)
+            val lon = "%.2f".format(planet.longitude)
+            val house = chartCake.houseCusps.houseForLongitude(planet.longitude)
+            Log.d("PlanetHouse", "$name → Lon: $lon° falls in House $house")
+        }
+
+        // 🔮 Sign Strength Calculation
+        val signStrengthCalc = SignStrengthCalculator(chartCake, totalScores)
+        val signScores = signStrengthCalc.calculateTotalSignScores()
+
+        Log.d("SignStrength", "🔮 Total Sign Strength Scores:")
+        signScores.entries.sortedByDescending { it.value }.forEach { (sign, score) ->
+            Log.d("SignStrength", "${sign.name.padEnd(10)} → Score: %.2f".format(score))
+
+            // 🏛️ House Strength Scores
+            val houseStrengthCalc = HouseStrengthCalculator(chartCake, totalScores)
+            val houseScores = houseStrengthCalc.calculateHouseStrengths()
+
+            Log.d("HouseStrength", "🏛️ Total House Strength Scores:")
+            houseScores.entries.sortedByDescending { it.value }.forEach { (house, score) ->
+                Log.d("HouseStrength", "House $house → Score: %.2f".format(score))
+                val aspectKindScores = calculator.totalScoresByAspectType(bodies)
+                Log.d("AspectKindScores", "🎯 Aspect Scores by Type:")
+                aspectKindScores.forEach { (kind, total) ->
+                    Log.d("AspectKindScores", "${kind.name}: %.2f".format(total))
+                }
+
+            }
+
+
+        }
+    }
 }
