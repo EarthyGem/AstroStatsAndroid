@@ -3,7 +3,6 @@ package app.lilaverse.astrostatsandroid
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,22 +35,34 @@ import java.net.HttpURLConnection
 
 @Composable
 fun ChartInputScreen(
+    editChart: Chart? = null,
     onSaveComplete: (Chart) -> Unit,
     onCancel: () -> Unit
 ) {
     val context = LocalContext.current
-    val defaultCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles")).apply {
-        set(1977, Calendar.MAY, 21, 13, 57)
+
+    // Initialize with either the edit chart values or defaults
+    val defaultCalendar = Calendar.getInstance(
+        if (editChart?.timezone != null)
+            TimeZone.getTimeZone(editChart.timezone)
+        else
+            TimeZone.getTimeZone("America/Los_Angeles")
+    )
+
+    if (editChart == null) {
+        defaultCalendar.set(1977, Calendar.MAY, 21, 13, 57)
+    } else {
+        defaultCalendar.time = editChart.date
     }
 
-    var name by remember { mutableStateOf("") }
-    var place by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(editChart?.name ?: "") }
+    var place by remember { mutableStateOf(editChart?.birthPlace ?: "") }
     var dateTimeText by remember { mutableStateOf("") }
 
     var selectedDateTime by remember { mutableStateOf(defaultCalendar) }
-    var latitude by remember { mutableStateOf(32.7157) }
-    var longitude by remember { mutableStateOf(-117.1611) }
-    var timezone by remember { mutableStateOf("America/Los_Angeles") }
+    var latitude by remember { mutableStateOf(editChart?.latitude ?: 32.7157) }
+    var longitude by remember { mutableStateOf(editChart?.longitude ?: -117.1611) }
+    var timezone by remember { mutableStateOf(editChart?.timezone ?: "America/Los_Angeles") }
 
     var isNameError by remember { mutableStateOf(false) }
     var isPlaceError by remember { mutableStateOf(false) }
@@ -59,30 +70,40 @@ fun ChartInputScreen(
     var isSaving by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Move the planetPositions declaration here, before any function uses it
-    var planetPositions by remember { mutableStateOf(getPlanetPositionsFor(selectedDateTime.time, timezone)) }
+    // Initialize planet positions based on either edit chart or current values
+    var planetPositions by remember {
+        mutableStateOf(
+            if (editChart != null)
+                editChart.planetaryPositions
+            else
+                getPlanetPositionsFor(selectedDateTime.time, timezone)
+        )
+    }
 
-    // Function declarations - moved to the top-level of the composable
-    fun fallbackToDeviceTimezone(callback: (String) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
-            callback(TimeZone.getDefault().id)
+    // If we have an edit chart, format the date initially
+    LaunchedEffect(editChart) {
+        if (editChart != null) {
+            val format = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+            format.timeZone = TimeZone.getTimeZone(editChart.timezone)
+            dateTimeText = format.format(editChart.date)
         }
     }
 
+    // Function to update timezone and recalculate positions
     fun updateSelectedDateTimeWithTimezone(newTimezone: String) {
-        // Get the currently selected date/time components (which are in the device's timezone)
-        val deviceCal = Calendar.getInstance()
-        deviceCal.time = selectedDateTime.time
+        // Get the current date components
+        val currentCal = Calendar.getInstance()
+        currentCal.time = selectedDateTime.time
 
         // Create a new calendar with the birth location's timezone
         val locationCal = Calendar.getInstance(TimeZone.getTimeZone(newTimezone))
 
         // Copy the date components
-        locationCal.set(Calendar.YEAR, deviceCal.get(Calendar.YEAR))
-        locationCal.set(Calendar.MONTH, deviceCal.get(Calendar.MONTH))
-        locationCal.set(Calendar.DAY_OF_MONTH, deviceCal.get(Calendar.DAY_OF_MONTH))
-        locationCal.set(Calendar.HOUR_OF_DAY, deviceCal.get(Calendar.HOUR_OF_DAY))
-        locationCal.set(Calendar.MINUTE, deviceCal.get(Calendar.MINUTE))
+        locationCal.set(Calendar.YEAR, currentCal.get(Calendar.YEAR))
+        locationCal.set(Calendar.MONTH, currentCal.get(Calendar.MONTH))
+        locationCal.set(Calendar.DAY_OF_MONTH, currentCal.get(Calendar.DAY_OF_MONTH))
+        locationCal.set(Calendar.HOUR_OF_DAY, currentCal.get(Calendar.HOUR_OF_DAY))
+        locationCal.set(Calendar.MINUTE, currentCal.get(Calendar.MINUTE))
 
         // Update the selected date/time
         selectedDateTime = locationCal
@@ -96,6 +117,12 @@ fun ChartInputScreen(
         planetPositions = getPlanetPositionsFor(selectedDateTime.time, newTimezone)
     }
 
+    fun fallbackToDeviceTimezone(callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            callback(TimeZone.getDefault().id)
+        }
+    }
+
     fun getTimezoneFromCoordinates(latitude: Double, longitude: Double, callback: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -103,7 +130,7 @@ fun ChartInputScreen(
                 val timestamp = System.currentTimeMillis() / 1000
 
                 // Create URL for the API request
-                val apiKey = "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8" // Replace with your API key
+                val apiKey = "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8" // Replace with your actual key
                 val url = URL("https://maps.googleapis.com/maps/api/timezone/json?location=$latitude,$longitude&timestamp=$timestamp&key=$apiKey")
 
                 // Make the request
@@ -131,17 +158,14 @@ fun ChartInputScreen(
                         }
                     } else {
                         Log.e("Timezone", "Error: ${jsonResponse.getString("status")}")
-                        // Fallback to default timezone
                         fallbackToDeviceTimezone(callback)
                     }
                 } else {
                     Log.e("Timezone", "HTTP Error: $responseCode")
-                    // Fallback to default timezone
                     fallbackToDeviceTimezone(callback)
                 }
             } catch (e: Exception) {
                 Log.e("Timezone", "Exception: ${e.message}")
-                // Fallback to default timezone
                 fallbackToDeviceTimezone(callback)
             }
         }
@@ -155,20 +179,24 @@ fun ChartInputScreen(
     }
 
     fun launchDateTimePicker() {
-        val now = Calendar.getInstance() // Device calendar for picker
-        DatePickerDialog(context, { _, year, month, day ->
-            TimePickerDialog(context, { _, hour, minute ->
-                // Get the selected timezone or default to device timezone
-                val tz = TimeZone.getTimeZone(timezone)
+        // Use the current selected calendar for initial values
+        val year = selectedDateTime.get(Calendar.YEAR)
+        val month = selectedDateTime.get(Calendar.MONTH)
+        val day = selectedDateTime.get(Calendar.DAY_OF_MONTH)
+        val hour = selectedDateTime.get(Calendar.HOUR_OF_DAY)
+        val minute = selectedDateTime.get(Calendar.MINUTE)
 
+        DatePickerDialog(context, { _, newYear, newMonth, newDay ->
+            TimePickerDialog(context, { _, newHour, newMinute ->
                 // Create calendar in the birth location's timezone
+                val tz = TimeZone.getTimeZone(timezone)
                 val cal = Calendar.getInstance(tz)
-                cal.set(year, month, day, hour, minute)
+                cal.set(newYear, newMonth, newDay, newHour, newMinute)
 
                 // Update our state
                 selectedDateTime = cal
 
-                // Format for display, showing it in the birth location's timezone
+                // Format for display, showing in birth location's timezone
                 val format = SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault())
                 format.timeZone = tz
                 dateTimeText = format.format(cal.time)
@@ -177,8 +205,8 @@ fun ChartInputScreen(
                 planetPositions = getPlanetPositionsFor(cal.time, timezone)
 
                 isDateTimeError = false
-            }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), false).show()
-        }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
+            }, hour, minute, false).show()
+        }, year, month, day).show()
     }
 
     fun saveChart() {
@@ -188,6 +216,8 @@ fun ChartInputScreen(
         }
 
         try {
+            isSaving = true
+
             // Create a calendar in the birth location's timezone
             val birthTimezone = TimeZone.getTimeZone(timezone)
             val birthCalendar = Calendar.getInstance(birthTimezone)
@@ -202,6 +232,7 @@ fun ChartInputScreen(
             val ascendantSign = Zodiac.signForDegree(ascCusp.longitude)
 
             val chart = Chart(
+                id = editChart?.id ?: 0, // Keep ID if editing, or use default
                 name = name,
                 date = birthCalendar.time,
                 birthPlace = place,
@@ -220,9 +251,12 @@ fun ChartInputScreen(
             errorMessage = "Error calculating chart: ${e.message}"
             Log.e("ChartInputScreen", "Error saving chart", e)
             e.printStackTrace()
+        } finally {
+            isSaving = false
         }
     }
 
+    // Initialize Places API
     LaunchedEffect(Unit) {
         try {
             if (!Places.isInitialized()) {
@@ -269,7 +303,12 @@ fun ChartInputScreen(
             .background(Color(0xFF1A1A2E))
             .padding(16.dp)
     ) {
-        Text("Create Birth Chart", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(
+            text = if (editChart == null) "Create Birth Chart" else "Edit Birth Chart",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -402,7 +441,7 @@ fun ChartInputScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A80F0), contentColor = Color.White)
             ) {
                 if (isSaving) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                else Text("Save Chart")
+                else Text(if (editChart == null) "Save Chart" else "Update Chart")
             }
         }
     }

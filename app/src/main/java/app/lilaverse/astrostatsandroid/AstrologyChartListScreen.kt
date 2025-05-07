@@ -2,6 +2,7 @@
 package app.lilaverse.astrostatsandroid
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,26 +11,36 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lilaverse.astrostatsandroid.ui.ChartListItem
 import app.lilaverse.astrostatsandroid.model.Chart
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import kotlin.math.roundToInt
 
 @Composable
 fun AstrologyChartListScreen(
     charts: List<Chart>,
     modifier: Modifier = Modifier,
     onAddChartClicked: () -> Unit,
-    onChartSelected: (Chart) -> Unit
+    onChartSelected: (Chart) -> Unit,
+    onChartEdit: (Chart) -> Unit = {}, // New parameter for edit action
+    onChartDelete: (Chart) -> Unit = {} // New parameter for delete action
 ) {
     Box(
         modifier = modifier
@@ -39,7 +50,7 @@ fun AstrologyChartListScreen(
         Column(Modifier.padding(horizontal = 16.dp)) {
             // Title
             Text(
-                "Astrology Charts",
+                "AstroStats",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -105,23 +116,16 @@ fun AstrologyChartListScreen(
                     ) {
                         itemsIndexed(charts) { index, chart ->
                             val isLast = index == charts.lastIndex
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(
-                                        when {
-                                            charts.size == 1 -> RoundedCornerShape(16.dp)
-                                            index == 0 -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                                            isLast -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-                                            else -> RoundedCornerShape(0.dp)
-                                        }
-                                    ),
-                                color = Color(0xFF1A1A1A)
-                            ) {
-                                ChartListItem(chart = chart) {
-                                    onChartSelected(chart)
-                                }
-                            }
+
+                            SwipeableChartItem(
+                                chart = chart,
+                                isLast = isLast,
+                                isFirst = index == 0,
+                                singleItem = charts.size == 1,
+                                onItemClick = { onChartSelected(chart) },
+                                onEdit = { onChartEdit(chart) },
+                                onDelete = { onChartDelete(chart) }
+                            )
 
                             if (!isLast) {
                                 Divider(
@@ -135,10 +139,10 @@ fun AstrologyChartListScreen(
             }
         }
 
-        // 🟦 FAB aligned to the outer Box
+        // FAB aligned to the outer Box
         FloatingActionButton(
             onClick = onAddChartClicked,
-            containerColor = Color(0xFF007AFF),
+            containerColor = Color.Black,
             contentColor = Color.White,
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -152,5 +156,119 @@ fun AstrologyChartListScreen(
                 modifier = Modifier.size(24.dp)
             )
         }
-    } // <-- closes root Box
+    }
+}
+
+@Composable
+fun SwipeableChartItem(
+    chart: Chart,
+    isLast: Boolean,
+    isFirst: Boolean,
+    singleItem: Boolean,
+    onItemClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+
+    // Width of the action areas in pixels
+    val triggerDistance = with(LocalDensity.current) { 80.dp.toPx() }
+    val editThreshold = -triggerDistance
+    val deleteThreshold = triggerDistance
+
+    // Offset state
+    var offsetX by remember { mutableStateOf(0f) }
+
+    // Draggable state
+    val draggableState = rememberDraggableState { delta ->
+        offsetX += delta
+    }
+
+    Box {
+        // Background with actions
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Edit action (revealed when swiping right)
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(Color(0xFF4CAF50)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit",
+                    tint = Color.White
+                )
+            }
+
+            // Delete action (revealed when swiping left)
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(Color(0xFFE91E63)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.White
+                )
+            }
+        }
+
+        // Foreground item that can be swiped
+        Surface(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
+                .fillMaxWidth()
+                .clip(
+                    when {
+                        singleItem -> RoundedCornerShape(16.dp)
+                        isFirst -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        isLast -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                        else -> RoundedCornerShape(0.dp)
+                    }
+                )
+                .draggable(
+                    state = draggableState,
+                    orientation = Orientation.Horizontal,
+                    onDragStopped = {
+                        when {
+                            offsetX > deleteThreshold -> {
+                                // Swiped right (to reveal edit)
+                                onEdit()
+                                offsetX = 0f // Reset position
+                            }
+                            offsetX < editThreshold -> {
+                                // Swiped left (to reveal delete)
+                                onDelete()
+                                offsetX = 0f // Reset position
+                            }
+                            else -> {
+                                // Not far enough, snap back
+                                offsetX = 0f
+                            }
+
+                        }
+                    }
+                ),
+            color = Color(0xFF1A1A1A)
+        ) {
+            ChartListItem(chart = chart) {
+                if (offsetX == 0f) {
+                    onItemClick()
+                } else {
+                    // Reset position if tapped while swiping
+                    offsetX = 0f
+                }
+            }
+        }
+    }
 }

@@ -33,7 +33,7 @@ fun BirthChartTab(chart: Chart) {
     val totalPowerScores = PlanetStrengthCalculator(
         orbDictionary,
         houseProvider = { chartCake.houseCusps.houseForLongitude(it.longitude) },
-        luminaryChecker = { it.body.keyName in listOf("Sun", "Moon") },
+        luminaryChecker = { it.body.keyName in listOf("Sun", "Moon", "Mercury") },
         houseCuspsProvider = { lon ->
             val houseNum = chartCake.houseCusps.houseForLongitude(lon)
             val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude

@@ -91,10 +91,15 @@ data class HouseCusp(val number: Int, val value: Double)
 class PlanetStrengthCalculator(
     private val orbDictionary: Map<String, Double>,
     private val houseProvider: (Coordinate) -> Int,
-    private val luminaryChecker: (Coordinate) -> Boolean,
+    private val luminaryChecker: (Coordinate) -> Boolean, // Keep the original luminary checker for Sun/Moon
     private val houseCuspsProvider: (Double) -> HouseCusp,
     private val houseCuspValues: List<Double>
 ) {
+    private fun isMercury(coord: Coordinate): Boolean {
+        return coord.body.keyName == "Mercury"
+    }
+
+
     fun getTotalPowerScoresForPlanetsCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
         Log.d("DeclinationDebug", "🔍 Logging Declinations for All Coordinates:")
         bodies.forEach { body ->
@@ -176,8 +181,10 @@ class PlanetStrengthCalculator(
             val h2 = houseProvider(p2)
             val isLum1 = luminaryChecker(p1)
             val isLum2 = luminaryChecker(p2)
+            val isMercury1 = isMercury(p1)
+            val isMercury2 = isMercury(p2)
 
-            val assignedOrb = getParallelOrbCategory(h1, h2, isLum1, isLum2)
+            val assignedOrb = getParallelOrbCategory(h1, h2, isLum1, isLum2, isMercury1, isMercury2)
             val actualOrb = aspect.orbDelta
 
             // Score calculation matching Swift implementation: (1 - actualOrb) * assignedOrb
@@ -199,8 +206,11 @@ class PlanetStrengthCalculator(
             val h2 = houseProvider(p2)
             val cat1 = listOf("angular", "succedent", "cadent")[(h1 - 1) % 3]
             val cat2 = listOf("angular", "succedent", "cadent")[(h2 - 1) % 3]
-            val prefix1 = if (luminaryChecker(p1)) "lum_$cat1" else cat1
-            val prefix2 = if (luminaryChecker(p2)) "lum_$cat2" else cat2
+
+            // Keep original luminary check but also check for Mercury
+            val prefix1 = if (luminaryChecker(p1) || isMercury(p1)) "lum_$cat1" else cat1
+            val prefix2 = if (luminaryChecker(p2) || isMercury(p2)) "lum_$cat2" else cat2
+
             val key1 = "${prefix1}_${aspect.kind.name.lowercase()}"
             val key2 = "${prefix2}_${aspect.kind.name.lowercase()}"
             val orb1 = orbDictionary[key1] ?: 0.0
@@ -302,8 +312,10 @@ class PlanetStrengthCalculator(
         val house2 = houseProvider(p2)
         val cat1 = listOf("angular", "succedent", "cadent")[(house1 - 1) % 3]
         val cat2 = listOf("angular", "succedent", "cadent")[(house2 - 1) % 3]
-        val prefix1 = if (luminaryChecker(p1)) "lum_${cat1}" else cat1
-        val prefix2 = if (luminaryChecker(p2)) "lum_${cat2}" else cat2
+
+        // Use luminary checker for Sun/Moon AND separately check for Mercury
+        val prefix1 = if (luminaryChecker(p1) || isMercury(p1)) "lum_${cat1}" else cat1
+        val prefix2 = if (luminaryChecker(p2) || isMercury(p2)) "lum_${cat2}" else cat2
 
         for (kind in Kind.values().filter { it != Kind.Parallel }) {
             val key1 = "${prefix1}_${kind.name.lowercase()}"
@@ -318,11 +330,14 @@ class PlanetStrengthCalculator(
     }
 
     // Updated to match Swift implementation
-    private fun getParallelOrbCategory(h1: Int, h2: Int, isLum1: Boolean, isLum2: Boolean): Double {
+    // Updated method signature to include Mercury info
+    private fun getParallelOrbCategory(h1: Int, h2: Int, isLum1: Boolean, isLum2: Boolean, isMercury1: Boolean, isMercury2: Boolean): Double {
         val cat1 = listOf("angular", "succedent", "cadent")[(h1 - 1) % 3]
         val cat2 = listOf("angular", "succedent", "cadent")[(h2 - 1) % 3]
-        val prefix1 = if (isLum1) "lum_$cat1" else cat1
-        val prefix2 = if (isLum2) "lum_$cat2" else cat2
+
+        // Consider both regular luminaries and Mercury as special cases
+        val prefix1 = if (isLum1 || isMercury1) "lum_$cat1" else cat1
+        val prefix2 = if (isLum2 || isMercury2) "lum_$cat2" else cat2
 
         // Match Swift implementation values
         val orbScores = mapOf(
@@ -339,4 +354,4 @@ class PlanetStrengthCalculator(
 
         return maxOf(orb1, orb2)
     }
-}
+    }

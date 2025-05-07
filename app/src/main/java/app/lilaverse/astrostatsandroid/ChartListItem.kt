@@ -22,7 +22,10 @@ import java.util.*
 
 @Composable
 fun ChartListItem(chart: Chart, onClick: () -> Unit) {
-    val dateFormat = SimpleDateFormat("MMM d, yyyy 'at' h:mma", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("MMM d, yyyy 'at' h:mma", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone(chart.timezone)
+    }
+
     val dateText = dateFormat.format(chart.date)
 
     // Calculate the strongest planet
@@ -32,7 +35,7 @@ fun ChartListItem(chart: Chart, onClick: () -> Unit) {
         PlanetStrengthCalculator(
             orbDictionary,
             houseProvider = { chartCake.houseCusps.houseForLongitude(it.longitude) },
-            luminaryChecker = { it.body.keyName in listOf("Sun", "Moon") },
+            luminaryChecker = { it.body.keyName in listOf("Sun", "Moon", "Mercury") },
             houseCuspsProvider = { lon ->
                 val houseNum = chartCake.houseCusps.houseForLongitude(lon)
                 val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude

@@ -29,7 +29,10 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        runPlanetStrengthTest()
+
+        // Removing the call to heavy calculations
+        // runPlanetStrengthTest()
+
         setContent {
             val context = LocalContext.current
             val chartDao = remember { ChartDatabase.getDatabase(context).chartDao() }
@@ -51,15 +54,34 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onChartSelected = { selectedChart ->
                                     navController.navigate("chartDetail/${selectedChart.id}")
+                                },
+                                onChartEdit = { chart ->
+                                    // Add navigation to edit screen
+                                    navController.navigate("addChart?chartId=${chart.id}")
+                                },
+                                onChartDelete = { chart ->
+                                    // Delete chart from database
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        chartDao.deleteChart(chart)
+                                    }
                                 }
                             )
                         }
                     }
 
-                    composable("addChart") {
+                    composable(
+                        route = "addChart?chartId={chartId}",
+                        arguments = listOf(navArgument("chartId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        })
+                    ) { backStackEntry ->
+                        val chartId = backStackEntry.arguments?.getInt("chartId") ?: -1
+                        val chartToEdit = if (chartId != -1) chartList.find { it.id == chartId } else null
+
                         ChartInputScreen(
+                            editChart = chartToEdit,
                             onSaveComplete = { chart ->
-                                // Use coroutine to insert in database instead of just adding to list
                                 CoroutineScope(Dispatchers.IO).launch {
                                     chartDao.insertChart(chart)
                                 }
@@ -86,8 +108,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
+    // Commenting out the entire runPlanetStrengthTest method
+    /*
     private fun runPlanetStrengthTest() {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
         calendar.set(1977, Calendar.MAY, 21, 13, 57, 0)
@@ -95,17 +117,15 @@ class MainActivity : ComponentActivity() {
 
         val latitude = 32.7157
         val longitude = -117.1611
-        val timezone = "America/Los_Angeles" // Use explicit timezone
 
-        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate, timezone)
+        val houseCusps = HouseCuspBuilder.create(latitude, longitude, birthDate) // ✅ Add this
 
         val chartCake = ChartCake(
             birthDate = birthDate,
             latitude = latitude,
             longitude = longitude,
             transitDate = Date(),
-            houseCusps = houseCusps,
-            timezone = timezone // Pass timezone explicitly
+            houseCusps = houseCusps // ✅ Pass it here
         )
 
         val bodies = chartCake.natalBodies
@@ -180,10 +200,8 @@ class MainActivity : ComponentActivity() {
                 aspectKindScores.forEach { (kind, total) ->
                     Log.d("AspectKindScores", "${kind.name}: %.2f".format(total))
                 }
-
             }
-
-
         }
     }
+    */
 }
