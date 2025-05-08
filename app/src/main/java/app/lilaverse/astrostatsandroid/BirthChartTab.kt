@@ -276,28 +276,16 @@ fun BirthChartTab(chart: Chart) {
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     BirthChartView(context).apply {
-                        // Create planet objects from the chart's planetary positions
-                        planets = chart.planetaryPositions.mapNotNull { line ->
-                            val parts = line.trim().split(" ")
-                            if (parts.size >= 2) {
-                                val glyph = parts[0]
-                                val degree = parts.getOrNull(1)?.toDoubleOrNull() ?: return@mapNotNull null
-                                Planet(name = "", glyph = glyph, degree = degree)
-                            } else null
-                        }
-                        // Set house cusps
-                        houseCusps = chart.houseCusps.allCusps().map { it.longitude }
-
-                        // Alternatively, you can use the ChartCake directly if you prefer
-                        // setChart(chartCake)
+                        setChart(chartCake) // This sets planets + cusps
                     }
                 }
             )
+
         }
     }
 }
 
-@Composable
+            @Composable
 fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, houseCusps: HouseCusps) {
     var selectedSort by remember { mutableStateOf(0) }
     val sortOptions = listOf("By Strength", "Conventional")
