@@ -164,7 +164,7 @@ data class Coordinate(
             val obliquity = getObliquity(jd)
             val ascDec = calculatePointDeclination(ascLon, obliquity)
 
-            Log.d("DeclinationCalc", "AC: Lon=${ascLon}°, Calculated Dec=${ascDec}°, JD=$jd, Obliq=$obliquity°")
+          //  Log.d("DeclinationCalc", "AC: Lon=${ascLon}°, Calculated Dec=${ascDec}°, JD=$jd, Obliq=$obliquity°")
 
             return Coordinate(
                 body = CelestialObject.SpecialCusp("Ascendant", cusp),
@@ -190,7 +190,7 @@ data class Coordinate(
             val obliquity = getObliquity(jd)
             val mcDec = calculatePointDeclination(mcLon, obliquity)
 
-            Log.d("DeclinationCalc", "MC: Lon=${mcLon}°, Calculated Dec=${mcDec}°, JD=$jd, Obliq=$obliquity°")
+         //   Log.d("DeclinationCalc", "MC: Lon=${mcLon}°, Calculated Dec=${mcDec}°, JD=$jd, Obliq=$obliquity°")
 
             return Coordinate(
                 body = CelestialObject.SpecialCusp("Midheaven", cusp),

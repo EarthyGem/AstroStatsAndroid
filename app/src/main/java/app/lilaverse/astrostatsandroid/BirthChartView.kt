@@ -359,29 +359,18 @@ class BirthChartView @JvmOverloads constructor(
 
     private fun drawPlanetsWithData(canvas: Canvas, centerX: Float, centerY: Float, planetRadius: Float) {
         if (planets.isEmpty()) {
-            // Debug log when no planets are available
             Log.d("BirthChartView", "No planets to draw: planets list is empty")
             return
         }
 
-        // Group planets by position to handle overlaps
         val MIN_SPACING = 4.0
 
-        // Debug log
-        Log.d("BirthChartView", "Drawing ${planets.size} planets")
-        for (planet in planets) {
-            Log.d("BirthChartView", "Planet: ${planet.name}, glyph: ${planet.glyph}, degree: ${planet.degree}")
-        }
-
-        // First, sort planets by position
+        // Sort and group planets by degree proximity
         val sortedPlanets = planets.sortedBy { it.degree }
-
-        // Group planets by proximity
         val planetGroups = mutableListOf<MutableList<Planet>>()
 
         for (planet in sortedPlanets) {
             var addedToGroup = false
-
             for (group in planetGroups) {
                 val lastPlanet = group.last()
                 if (abs(planet.degree - lastPlanet.degree) < MIN_SPACING) {
@@ -390,40 +379,49 @@ class BirthChartView @JvmOverloads constructor(
                     break
                 }
             }
-
             if (!addedToGroup) {
                 planetGroups.add(mutableListOf(planet))
             }
         }
 
-        // Now draw each group with staggered radii
+        // Draw each group with adaptive spacing and font size
         for (group in planetGroups) {
+            // Determine font shrink factor
+            val maxPlanetsBeforeShrink = 3
+            val fontShrinkStep = 0.2f
+            val minShrinkFactor = 0.6f
+            val groupShrinkFactor = if (group.size > maxPlanetsBeforeShrink) {
+                (1f - fontShrinkStep * (group.size - maxPlanetsBeforeShrink)).coerceAtLeast(minShrinkFactor)
+            } else 1f
+
             for ((index, planet) in group.withIndex()) {
-                // Calculate radius based on position in group
                 val radiusOffset = index * 25f * scaleFactor
                 val radius = planetRadius - radiusOffset
 
-                // Convert to angle in radians
-                // IMPORTANT FIX: Add 180 degrees to flip the chart orientation
-                val angle = 2 * Math.PI - (Math.toRadians(planet.degree -90) - Math.PI / 2)
+                // Angular jitter to reduce stacking
+                val jitterDegrees = 1.5f
+                val jitter = (index - (group.size - 1) / 2f) * jitterDegrees
+                val adjustedDegree = normalizeAngle(planet.degree + jitter)
 
-                // Draw planet glyph
+                val angle = 2 * Math.PI - (Math.toRadians(adjustedDegree - 90) - Math.PI / 2)
                 val planetX = centerX + cos(angle).toFloat() * radius
                 val planetY = centerY + sin(angle).toFloat() * radius
 
+                // Glyph paint
                 val planetPaint = Paint(textPaint).apply {
                     color = planetColors[planet.glyph] ?: Color.BLACK
-                    textSize = baseFontSize * 2.5f * scaleFactor // Much larger for better visibility
-                    isFakeBoldText = true // Bold for better visibility
+                    textSize = baseFontSize * 2.5f * scaleFactor * groupShrinkFactor
+                    isFakeBoldText = true
                 }
 
                 canvas.drawText(planet.glyph, planetX, planetY + planetPaint.textSize / 3, planetPaint)
 
-                // Log that we're drawing the planet
-                Log.d("BirthChartView", "Drawing planet ${planet.glyph} at angle ${planet.degree} degrees, radius $radius")
+                // Debug logging
+                Log.d("BirthChartView", "Drawing planet ${planet.name} at $adjustedDegree° (jittered), radius $radius, shrinkFactor=$groupShrinkFactor")
             }
         }
     }
+
 
     private fun drawPlanetsWithChartCake(canvas: Canvas, centerX: Float, centerY: Float, baseRadius: Float) {
         if (planetPositions.isEmpty()) {

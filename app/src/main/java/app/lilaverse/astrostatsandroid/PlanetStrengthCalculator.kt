@@ -101,15 +101,15 @@ class PlanetStrengthCalculator(
 
 
     fun getTotalPowerScoresForPlanetsCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
-        Log.d("DeclinationDebug", "🔍 Logging Declinations for All Coordinates:")
+       // Log.d("DeclinationDebug", "🔍 Logging Declinations for All Coordinates:")
         bodies.forEach { body ->
             val name = body.body.keyName
             val lon = String.format("%.2f", body.longitude)
             val dec = String.format("%.2f", body.declination)
             val hemisphere = if (body.declination >= 0) "N" else "S"
-            Log.d("DeclinationDebug", "🌐 $name → Lon: $lon° | Dec: $dec° $hemisphere")
+          //  Log.d("DeclinationDebug", "🌐 $name → Lon: $lon° | Dec: $dec° $hemisphere")
             if (body.declination == 0.0 && name != "Ascendant" && name != "Midheaven") {
-                Log.w("DeclinationDebug", "⚠️ $name has declination = 0.0 — possible missing calc")
+          //      Log.w("DeclinationDebug", "⚠️ $name has declination = 0.0 — possible missing calc")
             }
         }
 
@@ -118,7 +118,7 @@ class PlanetStrengthCalculator(
         return (aspectScores.keys + houseScores.keys).associateWith { body ->
             val a = aspectScores[body] ?: 0.0
             val h = houseScores[body] ?: 0.0
-            Log.d("PowerCalc", "🔍 ${body.body.keyName} → Aspect: %.2f | House: %.2f | Total: %.2f".format(a, h, a + h))
+       //     Log.d("PowerCalc", "🔍 ${body.body.keyName} → Aspect: %.2f | House: %.2f | Total: %.2f".format(a, h, a + h))
             a + h
         }
     }
@@ -130,7 +130,7 @@ class PlanetStrengthCalculator(
     private fun getHouseScore(body: Coordinate): Double {
         val key = body.body.keyName
         if (key == "Ascendant" || key == "Midheaven") {
-            Log.d("HouseScore", "🔒 $key is fixed at 15.0")
+         //   Log.d("HouseScore", "🔒 $key is fixed at 15.0")
             return 15.0
         }
 
@@ -142,7 +142,7 @@ class PlanetStrengthCalculator(
         val offset = abs(body.longitude - cusp.value)
         val score = power - (offset * (variation / size))
 
-        Log.d("HouseScore", "🏠 ${body.body.keyName}: House=$house | Cusp=${cusp.value} | Lon=${body.longitude} | Offset=$offset | Power=$power | Var=$variation | Size=$size → Score=$score")
+     //   Log.d("HouseScore", "🏠 ${body.body.keyName}: House=$house | Cusp=${cusp.value} | Lon=${body.longitude} | Offset=$offset | Power=$power | Var=$variation | Size=$size → Score=$score")
 
         return score
     }
@@ -151,7 +151,7 @@ class PlanetStrengthCalculator(
         return houseCuspValues.mapIndexed { i, current ->
             val next = if (i == houseCuspValues.lastIndex) houseCuspValues[0] else houseCuspValues[i + 1]
             val dist = (next - current + 360) % 360
-            Log.d("HouseSize", "House ${i + 1} size: $dist")
+        //    Log.d("HouseSize", "House ${i + 1} size: $dist")
             dist
         }
     }
@@ -159,7 +159,7 @@ class PlanetStrengthCalculator(
     fun allCelestialAspectScoresCo(bodies: List<Coordinate>): Map<Coordinate, Double> {
         val scoreMap = mutableMapOf<Coordinate, Double>()
         allCelestialAspectScoresByAspect(bodies).forEach { (aspect, score) ->
-            Log.d("AspectScore", "🔗 ${aspect.body1.body.keyName} - ${aspect.body2.body.keyName} (${aspect.kind}) → Orb=${aspect.orbDelta} | Score=$score")
+       //     Log.d("AspectScore", "🔗 ${aspect.body1.body.keyName} - ${aspect.body2.body.keyName} (${aspect.kind}) → Orb=${aspect.orbDelta} | Score=$score")
             scoreMap[aspect.body1] = (scoreMap[aspect.body1] ?: 0.0) + score
             scoreMap[aspect.body2] = (scoreMap[aspect.body2] ?: 0.0) + score
         }
@@ -219,7 +219,7 @@ class PlanetStrengthCalculator(
             val actualOrb = aspect.orbDelta
             val score = (maxOrb - abs(actualOrb)).coerceAtLeast(0.0)
 
-            Log.d("AspectStandard", "🌀 ${p1.body.keyName}-${p2.body.keyName} (${aspect.kind}) | Keys=[$key1,$key2] | Orb=${actualOrb} | Max=$maxOrb | Score=$score")
+         //   Log.d("AspectStandard", "🌀 ${p1.body.keyName}-${p2.body.keyName} (${aspect.kind}) | Keys=[$key1,$key2] | Orb=${actualOrb} | Max=$maxOrb | Score=$score")
             scoreDict[aspect] = score
         }
 
