@@ -1,6 +1,12 @@
 package app.lilaverse.astrostatsandroid
 
-class HouseCusps(private val cusps: List<Cusp>) {
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+class HouseCusps(private val cusps: List<Cusp>) : Parcelable {
+
+
 
     init {
         require(cusps.size == 12) { "HouseCusps must contain exactly 12 cusps." }

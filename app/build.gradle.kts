@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.kapt") // ✅ This is the correct kapt plugin for Kotlin DSL
+    id("kotlin-parcelize")
 }
 
 
@@ -46,6 +47,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true  // Enable BuildConfig generation
+        viewBinding = true
     }
 }
 
@@ -54,6 +56,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 
     // Google Places API - already included in your dependencies
     implementation("com.google.android.libraries.places:places:3.3.0")

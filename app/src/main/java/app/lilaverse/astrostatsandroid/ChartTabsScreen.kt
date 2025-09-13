@@ -6,6 +6,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import androidx.compose.foundation.layout.Arrangement
+import app.lilaverse.astrostatsandroid.chat.ChatActivity
 import app.lilaverse.astrostatsandroid.model.Chart
 import app.lilaverse.astrostatsandroid.model.*
 import app.lilaverse.astrostatsandroid.*
@@ -16,6 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
+    val context = LocalContext.current
     val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects")
     var selectedTab by remember { mutableStateOf(0) }
 
@@ -80,6 +85,18 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
 
     // UI Tabs
     Column {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Button(onClick = {
+                val intent = Intent(context, ChatActivity::class.java).apply {
+                    putExtra("chartCake", chartCake)
+                    putExtra("userName", chart.name)
+                }
+                context.startActivity(intent)
+            }) {
+                Text("Ask Lila")
+            }
+        }
+
         TabRow(selectedTabIndex = selectedTab) {
             tabs.forEachIndexed { index, title ->
                 Tab(

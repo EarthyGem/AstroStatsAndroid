@@ -1,10 +1,13 @@
 package app.lilaverse.astrostatsandroid
 
+import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import swisseph.SwissEph
 import java.util.Date
 import app.lilaverse.astrostatsandroid.model.Chart
 import java.util.TimeZone
-
+@Parcelize
 class ChartCake(
     val birthDate: Date,
     val latitude: Double,
@@ -12,7 +15,8 @@ class ChartCake(
     val transitDate: Date,
     val houseCusps: HouseCusps,
     val timezone: String = TimeZone.getDefault().id
-) {
+) : Parcelable {
+    @IgnoredOnParcel
     private val swe = SwissEph()
 
     val natalBodies: List<Coordinate> by lazy {
@@ -51,6 +55,11 @@ class ChartCake(
 
     val bodies: List<Coordinate>
         get() = natalBodies
+    fun returnPlanets(): String =
+        natalBodies.joinToString(separator = ", ") { it.body.keyName }
+
+    fun formattedAllHouseActivationsBlockV2(): String =
+        "No current house activations found."
 
     companion object {
         fun from(chart: Chart): ChartCake {
