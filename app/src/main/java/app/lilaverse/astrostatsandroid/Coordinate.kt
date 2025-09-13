@@ -12,19 +12,25 @@ import kotlin.math.cos
  */
 data class Coordinate(
     val body: CelestialObject,
-    val longitude: Double,
-    val declination: Double,
-    val velocity: Double,
+    var longitude: Double,
+    var declination: Double,
+    var velocity: Double,
     val date: Date
 ) {
     // Update the constructor to take timezone
     constructor(body: CelestialObject, date: Date, timezone: String = TimeZone.getDefault().id) : this(
         body = body,
-        longitude = calculateCoordinateData(body, date, timezone).first,
-        declination = calculateCoordinateData(body, date, timezone).second,
-        velocity = calculateCoordinateData(body, date, timezone).third,
+        longitude = 0.0,
+        declination = 0.0,
+        velocity = 0.0,
         date = date
-    )
+    ) {
+        val (calculatedLongitude, calculatedDeclination, calculatedVelocity) =
+            calculateCoordinateData(body, date, timezone)
+        longitude = calculatedLongitude
+        declination = calculatedDeclination
+        velocity = calculatedVelocity
+    }
 
     constructor(cusp: Cusp, date: Date, timezone: String = TimeZone.getDefault().id) : this(
         body = CelestialObject.Cusp(cusp),

@@ -1,5 +1,5 @@
 package app.lilaverse.astrostatsandroid
-
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,7 +21,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.lilaverse.astrostatsandroid.view.BirthChartView
 import app.lilaverse.astrostatsandroid.view.Planet
 import java.util.Locale
-
+import androidx.navigation.NavHostController
+import java.net.URLEncoder
 
 
 
@@ -286,7 +287,12 @@ fun BirthChartTab(chart: Chart) {
 }
 
             @Composable
-fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, houseCusps: HouseCusps) {
+            fun PlanetScoresTab(
+                planetScores: List<Triple<CelestialObject, Float, Float>>,
+                houseCusps: HouseCusps,
+                chartId: Int,
+                navController: NavHostController
+            ) {
     var selectedSort by remember { mutableStateOf(0) }
     val sortOptions = listOf("By Strength", "Conventional")
 
@@ -360,7 +366,11 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 6.dp)
+                    .clickable {
+                        val encoded = URLEncoder.encode(name, "UTF-8")
+                        navController.navigate("planetDetail/$chartId/$encoded")
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -420,19 +430,23 @@ fun PlanetScoresTab(planetScores: List<Triple<CelestialObject, Float, Float>>, h
 }
 
 @Composable
-fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
+fun SignScoresTab(
+    signScores: List<Triple<Zodiac.Sign, Float, Float>>,
+    chartId: Int,
+    navController: NavHostController
+) {
     var selectedSort by remember { mutableStateOf(0) }
     val sortOptions = listOf("By Strength", "Conventional")
 
     val sortedScores = when (selectedSort) {
-        0 -> signTriples.sortedByDescending { it.third }
-        else -> signTriples // Conventional = default order
+        0 -> signScores.sortedByDescending { it.third }
+        else -> signScores // Conventional = default order
     }
 
     // Calculate total score for proper percentage calculation
-    val totalScore = signTriples.sumOf { it.third.toDouble() }
+    val totalScore = signScores.sumOf { it.third.toDouble() }
     // Find maximum score for scaling the bars appropriately
-    val maxScore = signTriples.maxOfOrNull { it.third } ?: 1f
+    val maxScore = signScores.maxOfOrNull { it.third } ?: 1f
 
     val signColors = mapOf(
         "Aries" to Color(0xFFFF6347),     // light Mars
@@ -479,7 +493,8 @@ fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 6.dp)
+                    .clickable { navController.navigate("signDetail/$chartId/${sign.name}") },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -520,19 +535,18 @@ fun SignScoresTab(signTriples: List<Triple<Zodiac.Sign, Float, Float>>) {
 }
 
 @Composable
-fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
+fun HouseScoresTab(
+    houseTriples: List<Triple<Int, Float, Float>>,
+    chartId: Int,
+    navController: NavHostController
+) {
     var selectedSort by remember { mutableStateOf(0) }
     val sortOptions = listOf("By Strength", "Conventional")
-    val houseGlyphs = mapOf(
-        "Aries" to "♈", "Taurus" to "♉", "Gemini" to "♊", "Cancer" to "♋",
-        "Leo" to "♌", "Virgo" to "♍", "Libra" to "♎", "Scorpio" to "♏",
-        "Sagittarius" to "♐", "Capricorn" to "♑", "Aquarius" to "♒", "Pisces" to "♓",
-        "AC" to "↑", "MC" to "⊗", "South Node" to "☋"
-    )
+
 
     val sortedScores = when (selectedSort) {
         0 -> houseTriples.sortedByDescending { it.third }
-        else -> houseTriples // leave as is for conventional order
+        else -> houseTriples.sortedBy { it.first }
     }
 
     // Calculate total score for proper percentage calculation
@@ -541,18 +555,18 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
     val maxScore = houseTriples.maxOfOrNull { it.third } ?: 1f
 
     val houseColors = mapOf(
-        "1st House" to Color(0xFFFF6347),    // Aries color
-        "2nd House" to Color(0xFF9ACD32),    // Taurus color
-        "3rd House" to Color(0xFF00BFFF),    // Gemini color
-        "4th House" to Color(0xFF00CED1),    // Cancer color
-        "5th House" to Color(0xFFFFA500),    // Leo color
-        "6th House" to Color(0xFF4169E1),    // Virgo color
-        "7th House" to Color(0xFFFFE135),    // Libra color
-        "8th House" to Color(0xFF8B0000),    // Scorpio color
-        "9th House" to Color(0xFF4B0082),    // Sagittarius color
-        "10th House" to Color(0xFF2F4F4F),   // Capricorn color
-        "11th House" to Color(0xFF00FFFF),   // Aquarius color
-        "12th House" to Color(0xFF87CEFA)    // Pisces color
+        1 to Color(0xFFFF6347),    // Aries color
+        2 to Color(0xFF9ACD32),    // Taurus color
+        3 to Color(0xFF00BFFF),    // Gemini color
+        4 to Color(0xFF00CED1),    // Cancer color
+        5 to Color(0xFFFFA500),    // Leo color
+        6 to Color(0xFF4169E1),    // Virgo color
+        7 to Color(0xFFFFE135),    // Libra color
+        8 to Color(0xFF8B0000),    // Scorpio color
+        9 to Color(0xFF4B0082),    // Sagittarius color
+        10 to Color(0xFF2F4F4F),   // Capricorn color
+        11 to Color(0xFF00FFFF),   // Aquarius color
+        12 to Color(0xFF87CEFA)    // Pisces color   // Pisces color
     )
 
     Column(Modifier.padding(16.dp)) {
@@ -576,21 +590,21 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
 
         Spacer(Modifier.height(12.dp))
 
-        sortedScores.forEach { (name, _, score) ->
-            val color = houseColors[name] ?: Color.Gray
-            val glyph = houseGlyphs[name] ?: ""
+        sortedScores.forEach { (number, _, score) ->
+            val color = houseColors[number] ?: Color.Gray
 
             // Calculate the actual percentage relative to total score
             val actualPercent = (score / totalScore * 100).toFloat()
-
+            val name = "${ordinal(number)} House"
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 6.dp)
+                    .clickable { navController.navigate("houseDetail/$chartId/$number") },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$glyph $name",
+                    text = name,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.width(80.dp)
                 )
@@ -625,9 +639,21 @@ fun HouseScoresTab(houseTriples: List<Triple<String, Float, Float>>) {
         }
     }
 }
-
+        private fun ordinal(number: Int): String {
+            if (number % 100 in 11..13) return "${number}th"
+            return when (number % 10) {
+                1 -> "${number}st"
+                2 -> "${number}nd"
+                3 -> "${number}rd"
+                else -> "${number}th"
+            }
+        }
 @Composable
-fun AspectScoresTab(aspectTriples: List<Triple<Kind, Float, Float>>) {
+fun AspectScoresTab(
+    aspectTriples: List<Triple<Kind, Float, Float>>,
+    chartId: Int,
+    navController: NavHostController
+) {
     var selectedSort by remember { mutableStateOf(0) }
     val sortOptions = listOf("By Strength", "Conventional")
 
@@ -690,7 +716,11 @@ fun AspectScoresTab(aspectTriples: List<Triple<Kind, Float, Float>>) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 6.dp)
+                    .clickable {
+                        val encoded = URLEncoder.encode(kind.name, "UTF-8")
+                        navController.navigate("aspectDetail/$chartId/$encoded")
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

@@ -128,12 +128,18 @@ class BirthChartView @JvmOverloads constructor(
         val houseCusps = chart?.houseCusps ?: return
         val ascendantOffset = houseCusps.getCusp(0).longitude
         val bodies = chart?.bodies ?: return
+        // Raw longitudes for each body
+        val rawLongitudes = bodies.map { it.longitude.toFloat() }
+
+        // Adjust positions to avoid overlap and keep within house boundaries
+        val fixedLongitudes = fixPositionsIfNecessary(rawLongitudes, houseCusps)
 
         // Calculate planet positions adjusted for ascendant at 0 degrees
-        val positions = bodies.associate { body ->
-            val longitude = normalizeAngle(body.longitude - ascendantOffset)
-            body.body to longitude.toFloat()
-        }
+        val positions = bodies.mapIndexed { index, body ->
+            val longitude = normalizeAngle(fixedLongitudes[index] - ascendantOffset).toFloat()
+            body.body to longitude
+        }.toMap()
+
 
         // Update the planet positions map
         planetPositions = positions
@@ -549,7 +555,157 @@ class BirthChartView @JvmOverloads constructor(
             }
         }
     }
+    private fun fixPositionsIfNecessary(planets: List<Float>, houseCusps: HouseCusps): List<Float> {
+        data class PlanetDeg(var index: Int, var degree: Float)
 
+        val cuspBuffer = 3f
+        val minPlanetDistance = 5.5f
+        val maxIterations = 20
+
+        fun rolloverNormalize(value: Float): Float {
+            var d = value % 360f
+            if (d < 0f) d += 360f
+            return d
+        }
+
+        val cuspList = (0 until 12).map { houseCusps.getCusp(it).longitude.toFloat() }
+        val planetDegrees = planets.mapIndexed { idx, deg -> PlanetDeg(idx, rolloverNormalize(deg)) }.toMutableList()
+
+        fun circDist(a: Float, b: Float): Float {
+            val diff = abs(a - b)
+            return min(diff, 360f - diff)
+        }
+
+        fun houseIndex(deg: Float): Int {
+            for (i in 0 until cuspList.size) {
+                val start = cuspList[i]
+                val end = cuspList[(i + 1) % cuspList.size]
+                if (start < end) {
+                    if (deg >= start && deg < end) return i
+                } else {
+                    if (deg >= start || deg < end) return i
+                }
+            }
+            return 0
+        }
+
+        fun span(from: Float, to: Float): Float {
+            val result = if (to >= from) to - from else 360f - (from - to)
+            return if (result >= 0) result else result + 360f
+        }
+
+        fun clampToHouse(deg: Float, houseIdx: Int): Float {
+            val start = rolloverNormalize(cuspList[houseIdx] + cuspBuffer)
+            val end = rolloverNormalize(cuspList[(houseIdx + 1) % cuspList.size] - cuspBuffer)
+            return if (start < end) {
+                deg.coerceIn(start, end)
+            } else {
+                if (deg >= start || deg <= end) {
+                    deg
+                } else {
+                    val distStart = circDist(deg, start)
+                    val distEnd = circDist(deg, end)
+                    if (distStart < distEnd) start else end
+                }
+            }
+        }
+
+        fun circularSort(planetsIdx: List<Int>, houseIdx: Int): List<Int> {
+            val start = cuspList[houseIdx]
+            val end = cuspList[(houseIdx + 1) % cuspList.size]
+            val houseSpansZero = start > end
+            return planetsIdx.sortedBy { pid ->
+                val deg = planetDegrees[pid].degree
+                if (houseSpansZero) span(start, deg) else deg
+            }
+        }
+
+        val planetsPerHouse = Array(12) { mutableListOf<Int>() }
+        for (pd in planetDegrees) {
+            val hIdx = houseIndex(pd.degree)
+            planetsPerHouse[hIdx].add(pd.index)
+        }
+
+        for (hIdx in 0 until 12) {
+            val housePlanets = planetsPerHouse[hIdx]
+            val n = housePlanets.size
+            if (n <= 1) continue
+
+            val start = rolloverNormalize(cuspList[hIdx] + cuspBuffer)
+            val end = rolloverNormalize(cuspList[(hIdx + 1) % 12] - cuspBuffer)
+            val usableArc = span(start, end)
+
+            if (n > 4) {
+                val spacing = usableArc / (n - 1)
+                val sorted = circularSort(housePlanets, hIdx)
+                for ((offset, pid) in sorted.withIndex()) {
+                    val newDeg = rolloverNormalize(start + offset * spacing)
+                    planetDegrees[pid].degree = newDeg
+                }
+            } else {
+                var houseDegrees = circularSort(housePlanets, hIdx)
+                    .map { pid -> PlanetDeg(pid, planetDegrees[pid].degree) }.toMutableList()
+
+                var iterationCount = 0
+                var changed: Boolean
+                var lastPositions = houseDegrees.map { it.degree }
+
+                do {
+                    changed = false
+                    iterationCount++
+                    for (i in houseDegrees.indices) {
+                        val j = (i + 1) % houseDegrees.size
+                        val aDeg = houseDegrees[i].degree
+                        val bDeg = houseDegrees[j].degree
+                        val dist = circDist(aDeg, bDeg)
+                        if (dist < minPlanetDistance && dist > 0) {
+                            changed = true
+                            val bump = (minPlanetDistance - dist) / 2f
+                            houseDegrees[i].degree = clampToHouse(rolloverNormalize(aDeg - bump), hIdx)
+                            houseDegrees[j].degree = clampToHouse(rolloverNormalize(bDeg + bump), hIdx)
+                        }
+                    }
+
+                    val current = houseDegrees.map { it.degree }
+                    val hasConverged = current.zip(lastPositions).all { abs(it.first - it.second) < 0.1f }
+                    if (hasConverged) break
+                    lastPositions = current
+
+                    if (iterationCount >= maxIterations) {
+                        val spacing = usableArc / (n - 1)
+                        for ((offset, pd) in houseDegrees.withIndex()) {
+                            pd.degree = rolloverNormalize(start + offset * spacing)
+                        }
+                        break
+                    }
+                } while (changed)
+
+                for (pd in houseDegrees) {
+                    planetDegrees[pd.index].degree = pd.degree
+                }
+            }
+        }
+
+        for (pd in planetDegrees) {
+            val pDeg = pd.degree
+            val hIdx = houseIndex(pDeg)
+            val start = rolloverNormalize(cuspList[hIdx] + cuspBuffer)
+            val end = rolloverNormalize(cuspList[(hIdx + 1) % 12] - cuspBuffer)
+            val inBounds = if (start < end) {
+                pDeg >= start && pDeg <= end
+            } else {
+                pDeg >= start || pDeg <= end
+            }
+            if (!inBounds) {
+                val distStart = circDist(pDeg, start)
+                val distEnd = circDist(pDeg, end)
+                pd.degree = if (distStart < distEnd) start else end
+            }
+        }
+
+        planetDegrees.sortBy { it.index }
+        return planetDegrees.map { it.degree }
+    }
     // Calculate house distances similar to Swift code
     private fun calculateHouseDistances(houseCusps: HouseCusps, ascendantOffset: Double): FloatArray {
         val distances = FloatArray(12)

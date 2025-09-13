@@ -68,10 +68,9 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
         val max = signScores.values.maxOrNull() ?: 1.0
         Triple(it.key, (it.value / max * 100f).toFloat(), it.value.toFloat())
     }
-
+    val maxHouse = houseScores.values.maxOrNull() ?: 1.0
     val houseTriples = houseScores.entries.map {
-        val max = houseScores.values.maxOrNull() ?: 1.0
-        Triple("${it.key}th House", (it.value / max * 100f).toFloat(), it.value.toFloat())
+        Triple(it.key, (it.value / maxHouse * 100f).toFloat(), it.value.toFloat())
     }
 
     val aspectTriples = aspectKindScores.map {
@@ -95,10 +94,27 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
 
         when (selectedTab) {
             0 -> BirthChartTab(chart)
-            1 -> PlanetScoresTab(planetTriples, chartCake.houseCusps)
-            2 -> SignScoresTab(signTriples)
-            3 -> HouseScoresTab(houseTriples)
-            4 -> AspectScoresTab(aspectTriples)
+            1 -> PlanetScoresTab(
+                planetScores = planetTriples,
+                houseCusps = chartCake.houseCusps,
+                chartId = chart.id,
+                navController = navController
+            )
+            2 -> SignScoresTab(
+                signScores = signTriples,
+                chartId = chart.id,
+                navController = navController
+            )
+            3 -> HouseScoresTab(
+                houseTriples = houseTriples,
+                chartId = chart.id,
+                navController = navController
+            )
+            4 -> AspectScoresTab(
+                aspectTriples = aspectTriples,
+                chartId = chart.id,
+                navController = navController
+            )
         }
     }
 }

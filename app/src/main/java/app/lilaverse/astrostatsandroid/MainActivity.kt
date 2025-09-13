@@ -22,6 +22,7 @@ import app.lilaverse.astrostatsandroid.ChartCake
 import app.lilaverse.astrostatsandroid.PlanetStrengthCalculator
 import app.lilaverse.astrostatsandroid.HouseCusp
 import app.lilaverse.astrostatsandroid.model.ChartDatabase
+import app.lilaverse.astrostatsandroid.Planet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,6 +102,68 @@ class MainActivity : ComponentActivity() {
                         val chart = chartList.find { it.id == chartId }
                         if (chart != null) {
                             ChartTabsScreen(chart = chart, navController = navController)
+                        }
+                    }
+                    composable(
+                        route = "planetDetail/{chartId}/{planetName}",
+                        arguments = listOf(
+                            navArgument("chartId") { type = NavType.IntType },
+                            navArgument("planetName") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val chartId = backStackEntry.arguments?.getInt("chartId") ?: 0
+                        val planetName = backStackEntry.arguments?.getString("planetName") ?: ""
+                        val chart = chartList.find { it.id == chartId }
+                        val planet = Planet.fromKeyName(planetName)?.celestialObject
+                        if (chart != null && planet != null) {
+                            PlanetDetailScreen(chart = chart, planet = planet, navController = navController)
+                        }
+                    }
+
+                    composable(
+                        route = "signDetail/{chartId}/{signName}",
+                        arguments = listOf(
+                            navArgument("chartId") { type = NavType.IntType },
+                            navArgument("signName") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val chartId = backStackEntry.arguments?.getInt("chartId") ?: 0
+                        val signName = backStackEntry.arguments?.getString("signName") ?: ""
+                        val chart = chartList.find { it.id == chartId }
+                        val sign = Zodiac.fromName(signName)
+                        if (chart != null && sign != null) {
+                            SignDetailScreen(chart = chart, sign = sign, navController = navController)
+                        }
+                    }
+
+                    composable(
+                        route = "houseDetail/{chartId}/{houseNumber}",
+                        arguments = listOf(
+                            navArgument("chartId") { type = NavType.IntType },
+                            navArgument("houseNumber") { type = NavType.IntType }
+                        )
+                    ) { backStackEntry ->
+                        val chartId = backStackEntry.arguments?.getInt("chartId") ?: 0
+                        val houseNumber = backStackEntry.arguments?.getInt("houseNumber") ?: 1
+                        val chart = chartList.find { it.id == chartId }
+                        if (chart != null) {
+                            HouseDetailScreen(chart = chart, houseNumber = houseNumber, navController = navController)
+                        }
+                    }
+
+                    composable(
+                        route = "aspectDetail/{chartId}/{aspectKind}",
+                        arguments = listOf(
+                            navArgument("chartId") { type = NavType.IntType },
+                            navArgument("aspectKind") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val chartId = backStackEntry.arguments?.getInt("chartId") ?: 0
+                        val kindName = backStackEntry.arguments?.getString("aspectKind") ?: Kind.Conjunction.name
+                        val chart = chartList.find { it.id == chartId }
+                        val aspectKind = try { Kind.valueOf(kindName) } catch (e: IllegalArgumentException) { Kind.Conjunction }
+                        if (chart != null) {
+                            AspectDetailScreen(chart = chart, aspectKind = aspectKind, navController = navController)
                         }
                     }
                 }
