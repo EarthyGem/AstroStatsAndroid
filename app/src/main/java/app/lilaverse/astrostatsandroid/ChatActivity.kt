@@ -42,7 +42,7 @@ class ChatActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupInputField()
-
+        testChartCakeData()
 
 
         // Add welcome message
@@ -135,12 +135,31 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
+// Add debugging to your ChatActivity sendMessage() method
+
     private fun sendMessage() {
         val userInput = binding.editTextMessage.text.toString().trim()
         if (userInput.isEmpty()) return
 
-        Log.d(TAG, "=== SENDING MESSAGE ===")
-        Log.d(TAG, "User input: $userInput")
+        Log.d("ChatActivity", "=== DEBUGGING CHARTCAKE PASSING ===")
+        Log.d("ChatActivity", "ChartCake available: ${::chartCake.isInitialized}")
+
+        if (::chartCake.isInitialized) {
+            Log.d("ChatActivity", "ChartCake bodies count: ${chartCake.bodies?.size ?: 0}")
+            Log.d("ChatActivity", "ChartCake sample planet: ${chartCake.bodies?.firstOrNull()?.body?.keyName ?: "None"}")
+
+            // Test: Try to get planet info from ChartCake
+            val planetInfo = chartCake.returnPlanets()
+            Log.d("ChatActivity", "Planet info length: ${planetInfo?.length ?: 0}")
+            Log.d("ChatActivity", "Planet info preview: ${planetInfo?.take(200) ?: "NULL"}")
+
+            // Test: Try to get house activations
+            val houseActivations = chartCake.formattedAllHouseActivationsBlockV2()
+            Log.d("ChatActivity", "House activations length: ${houseActivations?.length ?: 0}")
+            Log.d("ChatActivity", "House activations preview: ${houseActivations?.take(200) ?: "NULL"}")
+        } else {
+            Log.e("ChatActivity", "ChartCake is NOT initialized!")
+        }
 
         addUserMessage(userInput)
         binding.editTextMessage.text.clear()
@@ -150,17 +169,18 @@ class ChatActivity : AppCompatActivity() {
         val typingMessageIndex = messages.size - 1
 
         try {
-            Log.d(TAG, "Calling AgentManager.sendMessageToAgent...")
+            Log.d("ChatActivity", "Calling AgentManager with:")
+            Log.d("ChatActivity", "- userName: $userName")
+            Log.d("ChatActivity", "- chartCake: ${if (::chartCake.isInitialized) "AVAILABLE" else "NULL"}")
 
             AgentManager.sendMessageToAgent(
                 prompt = userInput,
-                chartCake = chartCake,
+                chartCake = chartCake,  // ← Make sure this is the correct ChartCake instance
                 userName = userName,
                 chartContextType = ChartContextType.NATAL,
                 chartTimeContext = ChartTimeContext.PRESENT
             ) { response ->
-                Log.d(TAG, "AgentManager callback received")
-                Log.d(TAG, "Response: ${response?.take(200) ?: "NULL"}")
+                Log.d("ChatActivity", "AgentManager response received: ${response?.take(100) ?: "NULL"}")
 
                 runOnUiThread {
                     try {
@@ -170,27 +190,49 @@ class ChatActivity : AppCompatActivity() {
                             messageAdapter.notifyItemRemoved(typingMessageIndex)
                         }
 
-                        val finalResponse = response ?: "I'm having trouble processing your request. Please try again or check the logs for details."
+                        val finalResponse = response ?: "I'm having trouble processing your request. Please try again."
                         addAssistantMessage(finalResponse)
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error handling AgentManager response", e)
+                        Log.e("ChatActivity", "Error handling response", e)
                         addAssistantMessage("Error handling response: ${e.message}")
                     }
                 }
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error calling AgentManager", e)
+            Log.e("ChatActivity", "Error calling AgentManager", e)
             // Remove typing indicator
             if (messages.size > typingMessageIndex && !messages[typingMessageIndex].isUser) {
                 messages.removeAt(typingMessageIndex)
                 messageAdapter.notifyItemRemoved(typingMessageIndex)
             }
-            addAssistantMessage("Error calling AgentManager: ${e.message}")
+            addAssistantMessage("Error sending message: ${e.message}")
         }
     }
+    private fun testChartCakeData() {
+        if (::chartCake.isInitialized) {
+            Log.d("ChatActivity", "=== CHARTCAKE TEST ===")
 
+            // Test basic ChartCake methods
+            val planets = chartCake.returnPlanets()
+            Log.d("ChatActivity", "Planets data: ${planets?.take(500) ?: "NULL"}")
+
+            val activations = chartCake.formattedAllHouseActivationsBlockV2()
+            Log.d("ChatActivity", "House activations: ${activations?.take(500) ?: "NULL"}")
+
+            // Add a test message showing chart data
+            addSystemMessage("Chart loaded! Found ${chartCake.bodies?.size ?: 0} celestial bodies.")
+
+            // Show a sample of the chart data
+            planets?.let {
+                val preview = it.take(200) + if (it.length > 200) "..." else ""
+                addSystemMessage("Sample chart data: $preview")
+            }
+        } else {
+            addSystemMessage("ERROR: ChartCake not initialized!")
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "ChatActivity destroyed")
