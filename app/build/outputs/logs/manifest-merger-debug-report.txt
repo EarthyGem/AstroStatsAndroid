@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-51:12
-INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-51:12
-INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-51:12
-INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-51:12
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
+INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
+INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
+INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
 MERGED from [androidx.databinding:viewbinding:8.9.2] /Users/errickmiron/.gradle/caches/8.11.1/transforms/b3cd608f3c6f54c495221cb73176b492/transformed/viewbinding-8.9.2/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.11.1/transforms/37826cf27ce01965a313ed6e327a063d/transformed/places-3.3.0/AndroidManifest.xml:2:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/errickmiron/.gradle/caches/8.11.1/transforms/776cd901e359c721f10812abb07daa77/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
@@ -165,8 +165,8 @@ MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiro
 	android:name
 		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:12:22-76
 application
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:14:5-49:19
-INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:14:5-49:19
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:14:5-52:19
+INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:14:5-52:19
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.11.1/transforms/37826cf27ce01965a313ed6e327a063d/transformed/places-3.3.0/AndroidManifest.xml:14:5-22:19
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.11.1/transforms/37826cf27ce01965a313ed6e327a063d/transformed/places-3.3.0/AndroidManifest.xml:14:5-22:19
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/errickmiron/.gradle/caches/8.11.1/transforms/776cd901e359c721f10812abb07daa77/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -264,31 +264,33 @@ MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiro
 	android:name
 		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:32:13-91
 activity#app.lilaverse.astrostatsandroid.chat.ChatActivity
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:36:9-110
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:36:9-39:62
 	android:exported
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:36:84-108
-	android:name
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:36:19-83
-activity#app.lilaverse.astrostatsandroid.MainActivity
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:37:9-47:20
-	android:label
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:40:13-45
-	android:exported
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:39:13-36
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:38:13-37
 	android:theme
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:41:13-59
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:39:13-59
 	android:name
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:38:13-41
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:37:13-77
+activity#app.lilaverse.astrostatsandroid.MainActivity
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:40:9-50:20
+	android:label
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:43:13-45
+	android:exported
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:42:13-36
+	android:theme
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:44:13-59
+	android:name
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:41:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:42:13-46:29
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:45:13-49:29
 action#android.intent.action.MAIN
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:43:17-69
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:46:17-69
 	android:name
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:43:25-66
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:46:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:45:17-77
+ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:48:17-77
 	android:name
-		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:45:27-74
+		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:48:27-74
 uses-sdk
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml

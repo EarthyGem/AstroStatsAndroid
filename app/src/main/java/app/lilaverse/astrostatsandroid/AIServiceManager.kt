@@ -12,13 +12,13 @@ class AIServiceManager private constructor() {
         }
     }
 
-    private var currentService: AIService = ClaudeService(APIKeys.ANTHROPIC_KEY)
+    private var currentService: AIService = ClaudeService(APIKeys.ANTHROPIC)
 
     fun setService(serviceType: ServiceType) {
         currentService = when (serviceType) {
-            ServiceType.CLAUDE -> ClaudeService(APIKeys.ANTHROPIC_KEY)
-            ServiceType.OPENAI -> OpenAIService(APIKeys.OPENAI_KEY)
-            ServiceType.GEMINI -> GeminiService(APIKeys.GEMINI_KEY)
+            ServiceType.CLAUDE -> ClaudeService(APIKeys.ANTHROPIC)
+            ServiceType.OPENAI -> OpenAIService(APIKeys.OPENAI)
+            ServiceType.GEMINI -> GeminiService(APIKeys.GEMINI)
         }
     }
 

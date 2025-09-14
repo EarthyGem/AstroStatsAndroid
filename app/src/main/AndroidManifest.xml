@@ -33,7 +33,10 @@
             android:exported="false" /> <!-- This is intentional -->
 
         <!-- Your main activity -->
-        <activity android:name="app.lilaverse.astrostatsandroid.chat.ChatActivity" android:exported="false"/>
+        <activity
+            android:name="app.lilaverse.astrostatsandroid.chat.ChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AstroStatsAndroid" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -19,6 +19,7 @@ class ChartCake(
     @IgnoredOnParcel
     private val swe = SwissEph()
 
+    @IgnoredOnParcel
     val natalBodies: List<Coordinate> by lazy {
         val planets = listOf(
             CelestialObject.Planet(Planet.Sun),
@@ -52,7 +53,7 @@ class ChartCake(
 
         planets + asc + mc
     }
-
+    @IgnoredOnParcel
     val bodies: List<Coordinate>
         get() = natalBodies
     fun returnPlanets(): String =

@@ -14,5 +14,5 @@
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAG9E5iDCTy1_JhaEzgijPNuLtddc2rk6E</string>
     <string name="google_storage_bucket" translatable="false">androidastrostats.firebasestorage.app</string>
     <string name="project_id" translatable="false">androidastrostats</string>
-    <style name="Theme.AstroStatsAndroid" parent="android:Theme.Material.Light.NoActionBar"/>
+    <style name="Theme.AstroStatsAndroid" parent="Theme.AppCompat.Light.NoActionBar"/>
 </resources>
