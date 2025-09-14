@@ -2,7 +2,9 @@ package app.lilaverse.astrostatsandroid.chat
 
 import app.lilaverse.astrostatsandroid.ChartCake
 
+
 object AgentManager {
+
     fun getSystemInstructions(
         chartCake: ChartCake?,
         otherChart: ChartCake?,

@@ -5,6 +5,7 @@ plugins {
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.kapt") // ✅ This is the correct kapt plugin for Kotlin DSL
     id("kotlin-parcelize")
+
 }
 
 

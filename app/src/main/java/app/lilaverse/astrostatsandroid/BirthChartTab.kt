@@ -40,7 +40,7 @@ fun BirthChartTab(chart: Chart) {
             val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude
             HouseCusp(houseNum, cuspLon)
         },
-        houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
+        houseCuspValues = (0 until 12).map { chartCake.houseCusps.getCusp(it).longitude }
     ).getTotalPowerScoresForPlanetsCo(chartCake.bodies)
 
     val signScores = SignStrengthCalculator(chartCake, totalPowerScores).calculateTotalSignScores()

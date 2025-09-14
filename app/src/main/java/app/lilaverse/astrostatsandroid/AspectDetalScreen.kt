@@ -15,8 +15,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.lilaverse.astrostatsandroid.model.Chart
 import java.util.Locale
-import androidx.navigation.NavHostController
-import java.net.URLEncoder
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +31,7 @@ fun AspectDetailScreen(chart: Chart, aspectKind: Kind, navController: NavControl
                 val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude
                 HouseCusp(houseNum, cuspLon)
             },
-            houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
+            houseCuspValues = (0 until 12).map { chartCake.houseCusps.getCusp(it).longitude }
         )
     }
     val bodies = chartCake.bodies

@@ -1,11 +1,10 @@
 package app.lilaverse.astrostatsandroid
-
-import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import android.os.Parcelable
+
 
 @Parcelize
-class HouseCusps(private val cusps: List<Cusp>) : Parcelable {
-
+data class HouseCusps(val cusps: List<Cusp>) : Parcelable {
 
 
     init {
