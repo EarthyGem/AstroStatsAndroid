@@ -124,6 +124,148 @@ class ChartCake(
             )
         }
     }
+    // ---------- 1) Swift-parity: Natal placements ----------
+    fun formattedNatalPlacements(name: String): String {
+        fun lineFor(body: CelestialObject, label: String): String {
+            val c = Coordinate(body, birthDate, timezone)
+            val sign = prettySign(c.sign)
+            val pos  = degToDms(c.longitude)
+            val houseNum = houseCusps.houseForLongitude(c.longitude)
+            return "$name's $label $pos $sign in the House $houseNum house"
+        }
+
+        val sunLine   = lineFor(CelestialObject.Planet(Planet.Sun),      "Sun")
+        val moonLine  = lineFor(CelestialObject.Planet(Planet.Moon),     "Moon")
+        val mercLine  = lineFor(CelestialObject.Planet(Planet.Mercury),  "Mercury")
+        val venusLine = lineFor(CelestialObject.Planet(Planet.Venus),    "Venus")
+        val marsLine  = lineFor(CelestialObject.Planet(Planet.Mars),     "Mars")
+        val jupLine   = lineFor(CelestialObject.Planet(Planet.Jupiter),  "Jupiter")
+        val satLine   = lineFor(CelestialObject.Planet(Planet.Saturn),   "Saturn")
+        val uraLine   = lineFor(CelestialObject.Planet(Planet.Uranus),   "Uranus")
+        val nepLine   = lineFor(CelestialObject.Planet(Planet.Neptune),  "Neptune")
+        val pluLine   = lineFor(CelestialObject.Planet(Planet.Pluto),    "Pluto")
+
+        // Angles (natal)
+        val asc = natalBodies.first { it.body.keyName == "Ascendant" }
+        val mc  = natalBodies.first { it.body.keyName == "Midheaven" }
+        val ascStr = "Ascendant ${degToDms(asc.longitude)} ${prettySign(asc.sign)}"
+        val mcStr  = "Midheaven ${degToDms(mc.longitude)} ${prettySign(mc.sign)}"
+
+        // Nodes (natal) – you only include SouthNode in natalBodies, so build NorthNode explicitly
+
+        val sn = natalBodies.firstOrNull { it.body.keyName == "South Node" }
+            ?: Coordinate(CelestialObject.SouthNode, birthDate, timezone)
+
+
+        val snLine = "South Node ${degToDms(sn.longitude)} ${prettySign(sn.sign)} in the House ${houseCusps.houseForLongitude(sn.longitude)} house"
+
+        return """
+        Natal Placements:
+        - $sunLine
+        - $moonLine
+        - $mercLine
+        - $venusLine
+        - $marsLine
+        - $jupLine
+        - $satLine
+        - $uraLine
+        - $nepLine
+        - $pluLine
+        - $ascStr
+        - $mcStr
+        - $snLine
+    """.trimIndent()
+    }
+
+    // ---------- 2) Swift-parity: returnPlanets (expanded) ----------
+    fun returnPlanetsExpanded(name: String): String {
+        // --- Planet power via your PlanetStrengthCalculator ---
+        val houseProvider: (Coordinate) -> Int = { coord ->
+            // Small nudge for Ascendant like your HouseStrengthCalculator does
+            val lon = if (coord.body.keyName == "Ascendant") coord.longitude + 0.5 else coord.longitude
+            houseCusps.houseForLongitude(lon)
+        }
+
+        val luminaryChecker: (Coordinate) -> Boolean = { coord ->
+            val k = coord.body.keyName
+            k == "Sun" || k == "Moon"
+        }
+
+        val houseCuspValues: List<Double> = houseCusps.allCusps().map { it.normalizedLongitude }
+        val houseCuspsProvider: (Double) -> HouseCusp = { lon ->
+            val h = houseCusps.houseForLongitude(lon)
+            val cuspLon = houseCusps.getCusp(h - 1).normalizedLongitude
+            HouseCusp(h, cuspLon)
+        }
+
+        val pCalc = PlanetStrengthCalculator(
+            orbDictionary = orbDictionary,
+            houseProvider = houseProvider,
+            luminaryChecker = luminaryChecker,
+            houseCuspsProvider = houseCuspsProvider,
+            houseCuspValues = houseCuspValues
+        )
+
+        val planetPowerMap: Map<Coordinate, Double> =
+            pCalc.getTotalPowerScoresForPlanetsCo(natalBodies)
+
+        // Convert to keys by Planet name (Sun, Moon, …), merging angles/nodes out
+        val planetMetrics: Map<String, Metric> = planetPowerMap
+            .filter { (coord, _) ->
+                when (coord.body.keyName) {
+                    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto" -> true
+                    else -> false
+                }
+            }
+            .mapKeys { it.key.body.keyName }
+            .mapValues { Metric(power = it.value, netHarmony = 0.0) } // netHarmony TBD if you separate harmony/discord later
+
+        // --- House power via your HouseStrengthCalculator ---
+        val houseStrengths: Map<Int, Double> = HouseStrengthCalculator(this, planetPowerMap)
+            .calculateHouseStrengths()
+        val houseMetrics: Map<Int, Metric> = houseStrengths.mapValues { Metric(power = it.value, netHarmony = 0.0) }
+
+        // --- Sign power via your SignStrengthCalculator ---
+        val signStrengths: Map<Zodiac.Sign, Double> = SignStrengthCalculator(this, planetPowerMap)
+            .calculateTotalSignScores()
+        val signMetrics: Map<String, Metric> = signStrengths
+            .mapKeys { prettySign(it.key) }
+            .mapValues { Metric(power = it.value, netHarmony = 0.0) }
+
+        // Format like your Swift
+        val planetScores = planetMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (nameKey, m) ->
+                "$nameKey: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+
+        val houseScores = houseMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (houseNum, m) ->
+                "House $houseNum: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+
+        val signScores = signMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (signName, m) ->
+                "$signName: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+
+        val placements = formattedNatalPlacements(name)
+        val age = ageString(birthDate, Date())
+
+        return buildString {
+            append("age: $age\n")
+            append("planet scores: $planetScores\n")
+            append("house scores: $houseScores\n")
+            append("sign scores: $signScores\n")
+            append(placements.prependIndent(""))
+        }
+    }
+
     private fun computeMajorDate(birthDate: Date, transitDate: Date): Date {
         val diffSeconds = (transitDate.time - birthDate.time) / 1000.0
         val progressedSeconds = diffSeconds / 365.25
