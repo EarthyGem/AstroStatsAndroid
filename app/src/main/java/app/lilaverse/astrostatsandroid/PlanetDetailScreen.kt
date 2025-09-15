@@ -258,33 +258,33 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Day" to "Sunday"
         )
         "moon" -> mapOf(
-            "Urge" to "The urge for change, for domestic security, for emotional expression",
+            "Urge" to "The Domestic Urge: The urge for care, for domestic satisfaction, The urge to give and receive emotional support",
             "Deity" to "Selene, Diana, Artemis, Isis",
-            "Body Parts" to "Breasts, stomach, lymph, digestive fluids, cerebrospinal fluids",
+            "Body Parts" to "Breasts, stomach, diagphram, upper liver, lower lungs, cerebrospinal fluids",
             "Diseases" to "Digestive disorders, fluid retention, hormonal imbalances",
             "Gems" to "Pearl, moonstone, crystal, opal, selenite",
             "Plants" to "Cucumber, melon, cabbage, pumpkin, lily, poppy",
             "Element" to "Water",
             "Metal" to "Silver",
-            "Colors" to "Silver, white, pale green, cream",
-            "Musical Note" to "E",
+            "Colors" to "Green",
+            "Musical Note" to "F",
             "Day" to "Monday"
         )
         "mercury" -> mapOf(
-            "Urge" to "The urge for expression, for mental activity, for communication",
+            "Urge" to "The Intellectual Urge: The urge for expression, for mental activity, for communication",
             "Deity" to "Hermes, Thoth, Mercury",
-            "Body Parts" to "Brain, nervous system, hands, lungs, speech organs",
+            "Body Parts" to "Brain, nervous system, hands, upper lungs, speech organs",
             "Diseases" to "Nervous disorders, respiratory issues, coordination problems",
             "Gems" to "Agate, opal, variegated stones, quicksilver",
             "Plants" to "Lavender, marjoram, parsley, valerian, dill",
             "Element" to "Air",
             "Metal" to "Mercury, quicksilver",
-            "Colors" to "Purple, violet, mixed colors",
-            "Musical Note" to "E",
+            "Colors" to "Violets",
+            "Musical Note" to "B",
             "Day" to "Wednesday"
         )
         "venus" -> mapOf(
-            "Urge" to "The urge for companionship, for love, for beauty, for art",
+            "Urge" to "The Social Urge: The urge for companionship, for love, for beauty, for art",
             "Deity" to "Aphrodite, Venus, Ishtar, Freya",
             "Body Parts" to "Throat, kidneys, veins, thymus, sense of touch",
             "Diseases" to "Throat problems, kidney issues, diabetes, thyroid disorders",
@@ -292,12 +292,12 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Rose, apple, strawberry, lily, mint",
             "Element" to "Earth/Air",
             "Metal" to "Copper",
-            "Colors" to "Green, pink, pastel blue",
+            "Colors" to "Yellows",
             "Musical Note" to "A",
             "Day" to "Friday"
         )
         "mars" -> mapOf(
-            "Urge" to "The urge for aggression, for action, for conquest, for vigor",
+            "Urge" to "The Aggressive Urge: The urge for aggression, for action, for conquest, for facing obstacles",
             "Deity" to "Ares, Mars, Tyr",
             "Body Parts" to "Muscles, head, adrenal glands, genitals, red blood cells",
             "Diseases" to "Inflammation, burns, cuts, fevers, headaches",
@@ -305,12 +305,12 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Red pepper, nettle, ginger, basil, garlic",
             "Element" to "Fire",
             "Metal" to "Iron, steel",
-            "Colors" to "Red, scarlet, crimson",
+            "Colors" to "Reds",
             "Musical Note" to "C",
             "Day" to "Tuesday"
         )
         "jupiter" -> mapOf(
-            "Urge" to "The urge for expansion, for growth, for wisdom, for abundance",
+            "Urge" to "The Religious Urge: The urge for truth, for rightness, for faith",
             "Deity" to "Zeus, Jupiter, Thor",
             "Body Parts" to "Liver, hips, thighs, fat cells, arterial system",
             "Diseases" to "Metabolic disorders, liver issues, blood sugar problems",
@@ -318,12 +318,12 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Sage, nutmeg, dandelion, oak, maple",
             "Element" to "Fire/Air",
             "Metal" to "Tin",
-            "Colors" to "Royal blue, purple, indigo",
-            "Musical Note" to "F#",
+            "Colors" to "Purple, Indigo",
+            "Musical Note" to "E",
             "Day" to "Thursday"
         )
         "saturn" -> mapOf(
-            "Urge" to "The urge for security, for stability, for structure, for discipline",
+            "Urge" to "The Safety Urge: The urge for longevity, for maturity, for persistence",
             "Deity" to "Chronos, Saturn, Shani",
             "Body Parts" to "Bones, teeth, skin, knees, skeletal system",
             "Diseases" to "Arthritis, bone issues, chronic conditions, depression",
@@ -331,7 +331,7 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Cypress, ivy, nightshade, hemlock, yew",
             "Element" to "Earth",
             "Metal" to "Lead",
-            "Colors" to "Black, dark blue, gray, brown",
+            "Colors" to "Blues",
             "Musical Note" to "G",
             "Day" to "Saturday"
         )
@@ -342,14 +342,14 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Diseases" to "Spasms, neurological disorders, electrical imbalances",
             "Gems" to "Aquamarine, amber, uranium glass, fluorite",
             "Plants" to "Clover, birch, aspen, unusual plants",
-            "Element" to "Air/Fire",
+            "Element" to "Air",
             "Metal" to "Uranium, aluminum",
-            "Colors" to "Electric blue, neon colors, ultraviolet",
-            "Musical Note" to "D#",
-            "Day" to "None (modern planet)"
+            "Colors" to "Whites",
+            "Musical Note" to "",
+            "Day" to "Wednesday"
         )
         "neptune" -> mapOf(
-            "Urge" to "The urge for unity, for transcendence, for idealism, for dissolution",
+            "Urge" to "The Utopian Urge: The urge for the ideal, for vision, for possibilities, to see the essence of a thing",
             "Deity" to "Poseidon, Neptune, Vishnu",
             "Body Parts" to "Pineal gland, feet, lymphatic system, psychic centers",
             "Diseases" to "Addictions, mysterious ailments, foot problems, immune disorders",
@@ -357,12 +357,12 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Lotus, seaweed, water lily, marijuana, mushrooms",
             "Element" to "Water",
             "Metal" to "Neptune (hypothetical)",
-            "Colors" to "Sea green, misty blue, lavender",
-            "Musical Note" to "A#",
-            "Day" to "None (modern planet)"
+            "Colors" to "Iridescent",
+            "Musical Note" to "",
+            "Day" to "Friday"
         )
         "pluto" -> mapOf(
-            "Urge" to "The urge for power, for transformation, for rebirth, for elimination",
+            "Urge" to "The Universal Welfare Urge: The urge for cooperation, to find one's purpose, to get in where you fit in",
             "Deity" to "Hades, Pluto, Shiva, Kali",
             "Body Parts" to "Reproductive organs, cellular regeneration, waste elimination",
             "Diseases" to "Degenerative disorders, obsessions, power-related illnesses",
@@ -370,9 +370,9 @@ fun getPlanetCorrespondences(name: String): Map<String, String> {
             "Plants" to "Scorpion grass, blackthorn, deadly nightshade",
             "Element" to "Water/Fire",
             "Metal" to "Plutonium",
-            "Colors" to "Black, dark red, deep purple",
+            "Colors" to "Colors beyond the spectrum of human sight",
             "Musical Note" to "C#",
-            "Day" to "None (modern planet)"
+            "Day" to "Monday"
         )
         else -> mapOf("Information" to "No correspondences available")
     }

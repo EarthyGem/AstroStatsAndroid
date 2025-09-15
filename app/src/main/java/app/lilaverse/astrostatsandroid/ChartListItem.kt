@@ -21,15 +21,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun ChartListItem(chart: Chart, onClick: () -> Unit) {
+fun ChartListItem(chart: Chart, chartCake: ChartCake, onClick: () -> Unit) {
     val dateFormat = SimpleDateFormat("MMM d, yyyy 'at' h:mma", Locale.getDefault()).apply {
         timeZone = TimeZone.getTimeZone(chart.timezone)
     }
 
     val dateText = dateFormat.format(chart.date)
 
-    // Calculate the strongest planet
-    val chartCake = remember(chart) { ChartCake.from(chart) }
 
     val totalPowerScores = remember(chartCake) {
         PlanetStrengthCalculator(

@@ -149,7 +149,7 @@ class ChatActivity : AppCompatActivity() {
             Log.d("ChatActivity", "ChartCake sample planet: ${chartCake.bodies?.firstOrNull()?.body?.keyName ?: "None"}")
 
             // Test: Try to get planet info from ChartCake
-            val planetInfo = chartCake.returnPlanets()
+            val planetInfo = chartCake.returnPlanets("Your name")
             Log.d("ChatActivity", "Planet info length: ${planetInfo?.length ?: 0}")
             Log.d("ChatActivity", "Planet info preview: ${planetInfo?.take(200) ?: "NULL"}")
 
@@ -215,7 +215,7 @@ class ChatActivity : AppCompatActivity() {
             Log.d("ChatActivity", "=== CHARTCAKE TEST ===")
 
             // Test basic ChartCake methods
-            val planets = chartCake.returnPlanets()
+            val planets = chartCake.returnPlanets("Your name")
             Log.d("ChatActivity", "Planets data: ${planets?.take(500) ?: "NULL"}")
 
             val activations = chartCake.formattedAllHouseActivationsBlockV2()

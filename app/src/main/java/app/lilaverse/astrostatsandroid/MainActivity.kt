@@ -53,7 +53,8 @@ class MainActivity : ComponentActivity() {
                                 onAddChartClicked = {
                                     navController.navigate("addChart")
                                 },
-                                onChartSelected = { selectedChart ->
+                                onChartSelected = { selectedChart, chartCake ->
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("chartCake", chartCake)
                                     navController.navigate("chartDetail/${selectedChart.id}")
                                 },
                                 onChartEdit = { chart ->
@@ -100,8 +101,10 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val chartId = backStackEntry.arguments?.getInt("chartId") ?: 0
                         val chart = chartList.find { it.id == chartId }
-                        if (chart != null) {
-                            ChartTabsScreen(chart = chart, navController = navController)
+                        val chartCake = navController.previousBackStackEntry?.savedStateHandle?.get<ChartCake>("chartCake")
+                        if (chart != null && chartCake != null) {
+                            ChartTabsScreen(chart = chart, chartCake = chartCake, navController = navController)
+
                         }
                     }
                     composable(

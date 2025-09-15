@@ -11,7 +11,7 @@ data class Metric(val power: Double, val netHarmony: Double = 0.0)
 // Use US symbols so you always get a dot decimal, regardless of device locale
 private val oneDecFmt = DecimalFormat("0.0", DecimalFormatSymbols(Locale.US))
 fun Double.f1(): String = oneDecFmt.format(this)
-
+fun Double.f2(): String = DecimalFormat("0.00", DecimalFormatSymbols(Locale.US)).format(this)
 fun degToDms(lon: Double): String {
     val n = ((lon % 360 + 360) % 360)
     val d = n.toInt()

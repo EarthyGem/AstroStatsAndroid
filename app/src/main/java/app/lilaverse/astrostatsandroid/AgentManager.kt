@@ -17,8 +17,8 @@ object AgentManager {
         val otherPersonsGender = ""
 
         val resolvedPartnerName = partnerName ?: "Partner"
-        val myNatalDetails = chartCake?.returnPlanets()
-        val otherNatalDetails = otherChart?.returnPlanets()
+        val myNatalDetails = chartCake?.returnPlanets(userName)
+        val otherNatalDetails = otherChart?.returnPlanets(resolvedPartnerName)
 
         val allActivations = chartCake?.formattedAllHouseActivationsBlockV2() ?: "No current house activations found."
         val otherPersonAllActivations = otherChart?.formattedAllHouseActivationsBlockV2() ?: "No current house activations found."

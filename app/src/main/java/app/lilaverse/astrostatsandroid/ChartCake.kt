@@ -56,8 +56,98 @@ class ChartCake(
         SectionType.TRANSITS -> transitHouseCusps
     }
 
-    fun returnPlanets(): String =
-        natalBodies.joinToString(separator = ", ") { it.body.keyName }
+    fun returnPlanets(name: String): String {
+        // --- Planet power via your PlanetStrengthCalculator ---
+        val houseProvider: (Coordinate) -> Int = { coord ->
+            // Small nudge for Ascendant like your HouseStrengthCalculator does
+            val lon = if (coord.body.keyName == "Ascendant") coord.longitude + 0.5 else coord.longitude
+            houseCusps.houseForLongitude(lon)
+        }
+
+        val luminaryChecker: (Coordinate) -> Boolean = { coord ->
+            val k = coord.body.keyName
+            k == "Sun" || k == "Moon"
+        }
+
+        val houseCuspValues: List<Double> = houseCusps.allCusps().map { it.normalizedLongitude }
+        val houseCuspsProvider: (Double) -> HouseCusp = { lon ->
+            val h = houseCusps.houseForLongitude(lon)
+            val cuspLon = houseCusps.getCusp(h - 1).normalizedLongitude
+            HouseCusp(h, cuspLon)
+        }
+
+        val pCalc = PlanetStrengthCalculator(
+            orbDictionary = orbDictionary,
+            houseProvider = houseProvider,
+            luminaryChecker = luminaryChecker,
+            houseCuspsProvider = houseCuspsProvider,
+            houseCuspValues = houseCuspValues
+        )
+
+        val planetPowerMap: Map<Coordinate, Double> =
+            pCalc.getTotalPowerScoresForPlanetsCo(natalBodies)
+
+        // Convert to keys by Planet name (Sun, Moon, …), merging angles/nodes out
+        val planetMetrics: Map<String, Metric> = planetPowerMap
+            .filter { (coord, _) ->
+                when (coord.body.keyName) {
+                    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto" -> true
+                    else -> false
+                }
+            }
+            .mapKeys { it.key.body.keyName }
+            .mapValues { Metric(power = it.value, netHarmony = 0.0) } // netHarmony TBD if you separate harmony/discord later
+
+        // --- House power via your HouseStrengthCalculator ---
+        val houseStrengths: Map<Int, Double> = HouseStrengthCalculator(this, planetPowerMap)
+            .calculateHouseStrengths()
+        val houseMetrics: Map<Int, Metric> = houseStrengths.mapValues { Metric(power = it.value, netHarmony = 0.0) }
+
+        // --- Sign power via your SignStrengthCalculator ---
+        val signStrengths: Map<Zodiac.Sign, Double> = SignStrengthCalculator(this, planetPowerMap)
+            .calculateTotalSignScores()
+        val signMetrics: Map<String, Metric> = signStrengths
+            .mapKeys { prettySign(it.key) }
+            .mapValues { Metric(power = it.value, netHarmony = 0.0) }
+
+        // Format like your Swift
+        val planetScores = planetMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (nameKey, m) ->
+                "$nameKey: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+
+        val houseScores = houseMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (houseNum, m) ->
+                "House $houseNum: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+        // ---------- Net calculations (placeholders) ----------
+
+
+
+
+        val signScores = signMetrics
+            .toList()
+            .sortedByDescending { it.second.power }
+            .joinToString(", ") { (signName, m) ->
+                "$signName: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
+            }
+
+        val placements = formattedNatalPlacements(name)
+        val age = ageString(birthDate, Date())
+
+        return buildString {
+            append("age: $age\n")
+            append("planet scores: $planetScores\n")
+            append("house scores: $houseScores\n")
+            append("sign scores: $signScores\n")
+            append(placements.prependIndent(""))
+        }
+    }
+
 
     fun formattedAllHouseActivationsBlockV2(): String =
         "No current house activations found."
@@ -177,92 +267,35 @@ class ChartCake(
     """.trimIndent()
     }
 
-    // ---------- 2) Swift-parity: returnPlanets (expanded) ----------
-    fun returnPlanetsExpanded(name: String): String {
-        // --- Planet power via your PlanetStrengthCalculator ---
-        val houseProvider: (Coordinate) -> Int = { coord ->
-            // Small nudge for Ascendant like your HouseStrengthCalculator does
-            val lon = if (coord.body.keyName == "Ascendant") coord.longitude + 0.5 else coord.longitude
-            houseCusps.houseForLongitude(lon)
-        }
+    /** Determine the Moon's zodiac sign for a given date. */
+    fun moonSignForDate(date: Date): Zodiac.Sign {
+        val moonCoordinate = Coordinate(CelestialObject.Planet(Planet.Moon), date, timezone)
+        return moonCoordinate.sign
+    }
 
-        val luminaryChecker: (Coordinate) -> Boolean = { coord ->
-            val k = coord.body.keyName
-            k == "Sun" || k == "Moon"
-        }
+    private fun determineZodiacSign(longitude: Double): Zodiac.Sign {
+        return Zodiac.from(longitude)
+    }
 
-        val houseCuspValues: List<Double> = houseCusps.allCusps().map { it.normalizedLongitude }
-        val houseCuspsProvider: (Double) -> HouseCusp = { lon ->
-            val h = houseCusps.houseForLongitude(lon)
-            val cuspLon = houseCusps.getCusp(h - 1).normalizedLongitude
-            HouseCusp(h, cuspLon)
-        }
+    fun createAspect(a: Double, b: Double, orb: Double): Aspect? {
+        return Aspect.detect(a, b, orb)
+    }
 
-        val pCalc = PlanetStrengthCalculator(
-            orbDictionary = orbDictionary,
-            houseProvider = houseProvider,
-            luminaryChecker = luminaryChecker,
-            houseCuspsProvider = houseCuspsProvider,
-            houseCuspValues = houseCuspValues
-        )
+    fun filterConjunction(aspect: Aspect?): Aspect? =
+        if (aspect is Aspect.Conjunction) aspect else null
 
-        val planetPowerMap: Map<Coordinate, Double> =
-            pCalc.getTotalPowerScoresForPlanetsCo(natalBodies)
+    /** Retrieve a body by name from a list of coordinates. */
+    fun bodyByName(name: String, list: List<Coordinate>): Coordinate? =
+        list.firstOrNull { it.body.keyName == name }
 
-        // Convert to keys by Planet name (Sun, Moon, …), merging angles/nodes out
-        val planetMetrics: Map<String, Metric> = planetPowerMap
-            .filter { (coord, _) ->
-                when (coord.body.keyName) {
-                    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto" -> true
-                    else -> false
-                }
-            }
-            .mapKeys { it.key.body.keyName }
-            .mapValues { Metric(power = it.value, netHarmony = 0.0) } // netHarmony TBD if you separate harmony/discord later
-
-        // --- House power via your HouseStrengthCalculator ---
-        val houseStrengths: Map<Int, Double> = HouseStrengthCalculator(this, planetPowerMap)
-            .calculateHouseStrengths()
-        val houseMetrics: Map<Int, Metric> = houseStrengths.mapValues { Metric(power = it.value, netHarmony = 0.0) }
-
-        // --- Sign power via your SignStrengthCalculator ---
-        val signStrengths: Map<Zodiac.Sign, Double> = SignStrengthCalculator(this, planetPowerMap)
-            .calculateTotalSignScores()
-        val signMetrics: Map<String, Metric> = signStrengths
-            .mapKeys { prettySign(it.key) }
-            .mapValues { Metric(power = it.value, netHarmony = 0.0) }
-
-        // Format like your Swift
-        val planetScores = planetMetrics
-            .toList()
-            .sortedByDescending { it.second.power }
-            .joinToString(", ") { (nameKey, m) ->
-                "$nameKey: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
-            }
-
-        val houseScores = houseMetrics
-            .toList()
-            .sortedByDescending { it.second.power }
-            .joinToString(", ") { (houseNum, m) ->
-                "House $houseNum: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
-            }
-
-        val signScores = signMetrics
-            .toList()
-            .sortedByDescending { it.second.power }
-            .joinToString(", ") { (signName, m) ->
-                "$signName: power: ${m.power.f1()}, netHarmony: ${m.netHarmony.f1()}"
-            }
-
-        val placements = formattedNatalPlacements(name)
-        val age = ageString(birthDate, Date())
-
-        return buildString {
-            append("age: $age\n")
-            append("planet scores: $planetScores\n")
-            append("house scores: $houseScores\n")
-            append("sign scores: $signScores\n")
-            append(placements.prependIndent(""))
+    /** Convert an integer to its ordinal string (1 -> 1st). */
+    fun ordinal(n: Int): String {
+        if (n % 100 in 11..13) return "${n}th"
+        return when (n % 10) {
+            1 -> "${n}st"
+            2 -> "${n}nd"
+            3 -> "${n}rd"
+            else -> "${n}th"
         }
     }
 

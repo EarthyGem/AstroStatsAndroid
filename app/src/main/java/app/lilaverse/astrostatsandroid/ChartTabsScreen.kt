@@ -13,15 +13,12 @@ import app.lilaverse.astrostatsandroid.chat.ChatActivity
 import app.lilaverse.astrostatsandroid.model.Chart
 import app.lilaverse.astrostatsandroid.model.*
 import app.lilaverse.astrostatsandroid.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
+
 
 @Composable
-fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
+fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostController) {
     val context = LocalContext.current
-    val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects")
+    val tabs = listOf("Chart", "Planets", "Signs", "Houses", "Aspects")
     var selectedTab by remember { mutableStateOf(0) }
 
     val chartCake = remember(chart) { ChartCake.from(chart) }
@@ -97,12 +94,12 @@ fun ChartTabsScreen(chart: Chart, navController: NavHostController) {
             }
         }
 
-        TabRow(selectedTabIndex = selectedTab) {
+        ScrollableTabRow(selectedTabIndex = selectedTab) {
             tabs.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
+                    text = { Text(title, maxLines = 1) }
                 )
             }
         }

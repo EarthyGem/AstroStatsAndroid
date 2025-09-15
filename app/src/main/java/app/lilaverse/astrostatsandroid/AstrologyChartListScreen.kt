@@ -38,7 +38,7 @@ fun AstrologyChartListScreen(
     charts: List<Chart>,
     modifier: Modifier = Modifier,
     onAddChartClicked: () -> Unit,
-    onChartSelected: (Chart) -> Unit,
+    onChartSelected: (Chart, ChartCake) -> Unit,
     onChartEdit: (Chart) -> Unit = {}, // New parameter for edit action
     onChartDelete: (Chart) -> Unit = {} // New parameter for delete action
 ) {
@@ -122,7 +122,7 @@ fun AstrologyChartListScreen(
                                 isLast = isLast,
                                 isFirst = index == 0,
                                 singleItem = charts.size == 1,
-                                onItemClick = { onChartSelected(chart) },
+                                onItemClick = { chartCake -> onChartSelected(chart, chartCake) },
                                 onEdit = { onChartEdit(chart) },
                                 onDelete = { onChartDelete(chart) }
                             )
@@ -165,7 +165,7 @@ fun SwipeableChartItem(
     isLast: Boolean,
     isFirst: Boolean,
     singleItem: Boolean,
-    onItemClick: () -> Unit,
+    onItemClick: (ChartCake) -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -183,6 +183,7 @@ fun SwipeableChartItem(
     val draggableState = rememberDraggableState { delta ->
         offsetX += delta
     }
+    val chartCake = remember(chart) { ChartCake.from(chart) }
 
     Box {
         // Background with actions
@@ -261,9 +262,9 @@ fun SwipeableChartItem(
                 ),
             color = Color(0xFF1A1A1A)
         ) {
-            ChartListItem(chart = chart) {
+            ChartListItem(chart = chart, chartCake = chartCake) {
                 if (offsetX == 0f) {
-                    onItemClick()
+                    onItemClick(chartCake)
                 } else {
                     // Reset position if tapped while swiping
                     offsetX = 0f

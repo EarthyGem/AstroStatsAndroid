@@ -7,7 +7,7 @@ public final class APIKeys {
     @org.jetbrains.annotations.NotNull()
     public static final java.lang.String OPENAI2 = "sk-proj-L1F cIWt4YetrhDSpLHRHXx9B63UgRMcQgssWAanAoQZVU095aoF5PyBsEw65yZLvXgqeVP7xzCT3BlbkFJpZIyGQ1jyZq_sY5t_w-wlr16wSi7caMQQPDjeAGdWF1SrZMhNFO1JscNAENSsZiCngQ-FrNqAA";
     @org.jetbrains.annotations.NotNull()
-    public static final java.lang.String ANTHROPIC = "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";
+    public static final java.lang.String ANTHROPIC = "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";
     @org.jetbrains.annotations.NotNull()
     public static final java.lang.String HUGGING_FACE = "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";
     @org.jetbrains.annotations.NotNull()
