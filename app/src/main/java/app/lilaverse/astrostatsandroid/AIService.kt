@@ -275,14 +275,14 @@ class AIServiceManager private constructor() {
         }
     }
 
-    private var currentService: AIService = ClaudeService(APIKeys.ANTHROPIC)
+    private var currentService: AIService = ClaudeService(longhorns.ANTHROPIC)
 
     fun setService(serviceType: ServiceType) {
         Log.d(TAG, "Switching to service: $serviceType")
         currentService = when (serviceType) {
-            ServiceType.CLAUDE -> ClaudeService(APIKeys.ANTHROPIC)
-            ServiceType.OPENAI -> OpenAIService(APIKeys.OPENAI)
-            ServiceType.GEMINI -> GeminiService(APIKeys.GEMINI)
+            ServiceType.CLAUDE -> ClaudeService(longhorns.ANTHROPIC)
+            ServiceType.OPENAI -> OpenAIService(longhorns.OPENAI)
+            ServiceType.GEMINI -> GeminiService(longhorns.GEMINI)
         }
         Log.d(TAG, "Current service is now: ${currentService.providerName}")
     }
