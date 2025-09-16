@@ -23,7 +23,7 @@ import app.lilaverse.astrostatsandroid.model.Chart
 @Composable
 fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostController) {
     val context = LocalContext.current
-    val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects", "AstroClock")
+    val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects", "Transits","Progressions","AstroClock")
     var selectedTab by remember { mutableStateOf(0) }
 
     val chartCake = remember(chart) { ChartCake.from(chart) }
@@ -141,6 +141,10 @@ fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostCo
                     chartId = chart.id,
                     navController = navController
                 )
+                5 -> TransitsTab(chart = chart, chartCake = chartCake)
+                6 -> ProgressionsTab(chart = chart, chartCake = chartCake)
+                7 -> AstroClockTab(chart = chart)
+
             }
         }
     }

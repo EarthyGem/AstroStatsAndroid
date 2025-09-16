@@ -1,0 +1,78 @@
+[
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/xml_backup_rules.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/layout_item_message_assistant.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/item_message_assistant.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/layout_activity_chat.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/activity_chat.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/layout_item_message_user.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/item_message_user.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/drawable_ic_launcher_background.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/xml_data_extraction_rules.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "app.lilaverse.astrostatsandroid.app-release-69:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "app.lilaverse.astrostatsandroid.app-main-70:/mipmap-mdpi/ic_launcher.webp"
+    }
+]

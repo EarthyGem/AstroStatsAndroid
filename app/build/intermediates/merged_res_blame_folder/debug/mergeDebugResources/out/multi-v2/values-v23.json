@@ -4,7 +4,7 @@
             "outputFile": "app.lilaverse.astrostatsandroid.app-mergeDebugResources-71:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "/Users/errickmiron/.gradle/caches/8.11.1/transforms/153c884d4ed5da6a73591205b616fa6f/transformed/appcompat-1.6.1/res/values-v23/values-v23.xml",
+                    "source": "/Users/errickmiron/.gradle/caches/8.13/transforms/26ef0a915bce401efda2a4d2dbf64b2b/transformed/appcompat-1.6.1/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -15,7 +15,7 @@
                     }
                 },
                 {
-                    "source": "/Users/errickmiron/.gradle/caches/8.11.1/transforms/a9baf969504e473c45fe66d46f4c68ab/transformed/cardview-1.0.0/res/values-v23/values-v23.xml",
+                    "source": "/Users/errickmiron/.gradle/caches/8.13/transforms/f5faae0159f5aed6c66533f0bdfa99b1/transformed/cardview-1.0.0/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

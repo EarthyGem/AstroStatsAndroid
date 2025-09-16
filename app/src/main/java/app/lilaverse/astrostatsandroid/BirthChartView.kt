@@ -12,7 +12,12 @@ import kotlin.math.*
 
 // Define Planet class in the correct package
 data class Planet(val name: String, val glyph: String, val degree: Double)
+enum class ChartDisplayMode {
+    NATAL,
+    TRANSIT_BIWHEEL,
+    PROGRESSION_BIWHEEL
 
+}
 class BirthChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -23,8 +28,9 @@ class BirthChartView @JvmOverloads constructor(
     private val smallBaseFontSize: Float = 14f
 
     private var chart: ChartCake? = null
-    private var planetPositions: Map<CelestialObject, Float> = mapOf()
-
+    private var displayMode: ChartDisplayMode = ChartDisplayMode.NATAL
+    private var natalPlanetPositions: Map<CelestialObject, Float> = emptyMap()
+    private var transitPlanetPositions: Map<CelestialObject, Float> = emptyMap()
     // For simplified use when not using ChartCake
     var planets: List<Planet> = listOf()
         set(value) {
@@ -122,29 +128,67 @@ class BirthChartView @JvmOverloads constructor(
         updateChart()
         invalidate()
     }
-
+    fun setDisplayMode(mode: ChartDisplayMode) {
+        if (displayMode != mode) {
+            displayMode = mode
+            updateChart()
+            invalidate()
+        }
+    }
     // Update the positions of planets to be drawn on the chart
     private fun updateChart() {
-        val houseCusps = chart?.houseCusps ?: return
-        val ascendantOffset = houseCusps.getCusp(0).longitude
-        val bodies = chart?.bodies ?: return
-        // Raw longitudes for each body
-        val rawLongitudes = bodies.map { it.longitude.toFloat() }
+        val chartCake = chart ?: return
+        updateNatalPositions(chartCake)
+        when (displayMode) {
+            ChartDisplayMode.TRANSIT_BIWHEEL -> updateTransitPositions(chartCake)
+            ChartDisplayMode.PROGRESSION_BIWHEEL -> updateProgressionPositions(chartCake)
+            else -> transitPlanetPositions = emptyMap()
+        }
+    }
+    private fun updateProgressionPositions(chartCake: ChartCake) {
+        val natalAscendantOffset = chartCake.houseCusps.getCusp(0).longitude
+        val progressionBodies = chartCake.majorBodies // Use progressed bodies
 
-        // Adjust positions to avoid overlap and keep within house boundaries
-        val fixedLongitudes = fixPositionsIfNecessary(rawLongitudes, houseCusps)
+        val rawLongitudes = progressionBodies.map { it.longitude.toFloat() }
+        val fixedLongitudes = fixPositionsIfNecessary(rawLongitudes, chartCake.houseCusps)
 
-        // Calculate planet positions adjusted for ascendant at 0 degrees
-        val positions = bodies.mapIndexed { index, body ->
-            val longitude = normalizeAngle(fixedLongitudes[index] - ascendantOffset).toFloat()
-            body.body to longitude
+        transitPlanetPositions = progressionBodies.mapIndexed { index, body ->
+            val normalizedLongitude = normalizeAngle(fixedLongitudes[index].toDouble() - natalAscendantOffset).toFloat()
+            body.body to normalizedLongitude
         }.toMap()
-
-
-        // Update the planet positions map
-        planetPositions = positions
     }
 
+
+    private fun updateNatalPositions(chartCake: ChartCake) {
+        val houseCusps = chartCake.houseCusps
+        val ascendantOffset = houseCusps.getCusp(0).longitude
+
+        val bodies = chartCake.natalBodies
+
+        // Adjust positions to avoid overlap and keep within house boundaries
+        val rawLongitudes = bodies.map { it.longitude.toFloat() }
+        val fixedLongitudes = fixPositionsIfNecessary(rawLongitudes, houseCusps)
+
+
+            natalPlanetPositions = bodies.mapIndexed { index, body ->
+                val normalizedLongitude = normalizeAngle(fixedLongitudes[index].toDouble() - ascendantOffset).toFloat()
+                body.body to normalizedLongitude
+            }.toMap()
+        }
+
+        private fun updateTransitPositions(chartCake: ChartCake) {
+            val natalAscendantOffset = chartCake.houseCusps.getCusp(0).longitude
+            val transitCusps = chartCake.transitHouseCusps
+            val transitBodies = chartCake.transitBodies
+
+            val rawLongitudes = transitBodies.map { it.longitude.toFloat() }
+            val fixedLongitudes = fixPositionsIfNecessary(rawLongitudes, transitCusps)
+
+            transitPlanetPositions = transitBodies.mapIndexed { index, body ->
+                val normalizedLongitude = normalizeAngle(fixedLongitudes[index].toDouble() - natalAscendantOffset).toFloat()
+                body.body to normalizedLongitude
+            }.toMap()
+        }
     // Normalize angle to 0-360 range
     private fun normalizeAngle(angle: Double): Double {
         return (angle % 360 + 360) % 360
@@ -166,11 +210,19 @@ class BirthChartView @JvmOverloads constructor(
         canvas.drawCircle(centerX, centerY, outerRadius, circlePaint)
         canvas.drawCircle(centerX, centerY, outerRadius * 0.41f, circlePaint)
         canvas.drawCircle(centerX, centerY, outerRadius * 0.34f, circlePaint)
-
+        if (displayMode == ChartDisplayMode.TRANSIT_BIWHEEL || displayMode == ChartDisplayMode.PROGRESSION_BIWHEEL) {
+            canvas.drawCircle(centerX, centerY, outerRadius * 0.7f, circlePaint)
+        }
+        // Draw cusps and planets
         // Draw cusps and planets
         if (chart != null) {
             drawHouseCuspsWithChartCake(canvas, centerX, centerY, outerRadius)
-            drawPlanetsWithChartCake(canvas, centerX, centerY, outerRadius * 0.95f)
+            if (displayMode == ChartDisplayMode.TRANSIT_BIWHEEL || displayMode == ChartDisplayMode.PROGRESSION_BIWHEEL) {
+                drawBiwheelPlanets(canvas, centerX, centerY, outerRadius)
+            } else {
+                drawPlanetsWithChartCake(canvas, centerX, centerY, outerRadius * 0.95f)
+            }
+
         } else {
             drawHouseCuspsWithData(canvas, centerX, centerY, outerRadius)
             drawPlanetsWithData(canvas, centerX, centerY, outerRadius * 0.95f)
@@ -180,6 +232,7 @@ class BirthChartView @JvmOverloads constructor(
 
         canvas.restore()
     }
+
 
 
     private fun drawChartBackground(canvas: Canvas, centerX: Float, centerY: Float, outerRadius: Float) {
@@ -430,21 +483,79 @@ class BirthChartView @JvmOverloads constructor(
 
 
     private fun drawPlanetsWithChartCake(canvas: Canvas, centerX: Float, centerY: Float, baseRadius: Float) {
-        if (planetPositions.isEmpty()) {
-            Log.d("BirthChartView", "No planet positions to draw from ChartCake")
+        val chartCake = chart ?: return
+        drawPlanetsFromPositions(
+            canvas = canvas,
+            centerX = centerX,
+            centerY = centerY,
+            baseRadius = baseRadius,
+            positions = natalPlanetPositions,
+            bodies = chartCake.natalBodies,
+            glyphScale = 1f,
+            alpha = 255,
+            logLabel = "Natal"
+        )
+    }
+
+    private fun drawBiwheelPlanets(canvas: Canvas, centerX: Float, centerY: Float, outerRadius: Float) {
+        val chartCake = chart ?: return
+
+        val natalRadius = outerRadius * 0.62f
+        val outerRingRadius = outerRadius * 0.95f
+
+        // Draw inner wheel (natal)
+        drawPlanetsFromPositions(
+            canvas = canvas,
+            centerX = centerX,
+            centerY = centerY,
+            baseRadius = natalRadius,
+            positions = natalPlanetPositions,
+            bodies = chartCake.natalBodies,
+            glyphScale = 0.9f,
+            alpha = 255,
+            logLabel = "Natal"
+        )
+
+        // Decide outer wheel label and bodies based on display mode
+        val (outerBodies, logLabel) = when (displayMode) {
+            ChartDisplayMode.TRANSIT_BIWHEEL -> chartCake.transitBodies to "Transit"
+            ChartDisplayMode.PROGRESSION_BIWHEEL -> chartCake.majorBodies to "Progression"
+            else -> return
+        }
+
+        drawPlanetsFromPositions(
+            canvas = canvas,
+            centerX = centerX,
+            centerY = centerY,
+            baseRadius = outerRingRadius,
+            positions = transitPlanetPositions,
+            bodies = outerBodies,
+            glyphScale = 1.05f,
+            alpha = 220,
+            logLabel = logLabel
+        )
+    }
+
+    private fun drawPlanetsFromPositions(
+        canvas: Canvas,
+        centerX: Float,
+        centerY: Float,
+        baseRadius: Float,
+        positions: Map<CelestialObject, Float>,
+        bodies: List<Coordinate>,
+        glyphScale: Float,
+        alpha: Int,
+        logLabel: String
+    ) {
+        if (positions.isEmpty()) {
+            Log.d("BirthChartView", "No planet positions to draw for $logLabel chart")
             return
         }
 
         // Debug log
-        Log.d("BirthChartView", "Drawing ${planetPositions.size} planets from ChartCake")
-
-        // Group planets by position to handle overlaps like in Swift code
+        Log.d("BirthChartView", "Drawing ${positions.size} planets for $logLabel chart")
         val MIN_SPACING = 4f
-
-        // First, sort planets by position
-        val sortedPlanets = planetPositions.entries.sortedBy { it.value }
-
-        // Group planets by proximity
+        val sortedPlanets = positions.entries.sortedBy { it.value }
         val planetGroups = mutableListOf<MutableList<Pair<CelestialObject, Float>>>()
 
         for ((planet, position) in sortedPlanets) {
@@ -464,49 +575,40 @@ class BirthChartView @JvmOverloads constructor(
             }
         }
 
-        // Now draw each group with staggered radii
+        val bodyMap = bodies.associateBy { it.body }
+
+        val maxPlanetsBeforeShrink = 3
+        val fontShrinkStep = 0.2f
+        val minShrinkFactor = 0.6f
+
+        val paintAlpha = alpha.coerceIn(0, 255)
+
         for (group in planetGroups) {
+            val groupShrinkFactor = if (group.size > maxPlanetsBeforeShrink) {
+                (1f - fontShrinkStep * (group.size - maxPlanetsBeforeShrink)).coerceAtLeast(minShrinkFactor)
+            } else 1f
+
             for ((index, pair) in group.withIndex()) {
                 val (planet, position) = pair
 
                 // Find the body
-                val body = chart?.natalBodies?.find { it.body == planet } ?: continue
-
+                val body = bodyMap[planet] ?: continue
                 // Calculate radius based on position in group
                 val radiusOffset = index * 25f * scaleFactor
                 val radius = baseRadius - radiusOffset
 
-                // Convert to angle in radians (match Swift's angle calculation)
-                // IMPORTANT FIX: Add 180 degrees to flip the chart orientation
-                val angle = 2 * Math.PI - (Math.toRadians((position -90).toDouble()) - Math.PI / 2)
 
-                // Draw the planet glyph
-                val glyph = when (planet) {
-                    is CelestialObject.Planet -> when (planet.planet) {
-                        app.lilaverse.astrostatsandroid.Planet.Sun -> "☉"
-                        app.lilaverse.astrostatsandroid.Planet.Moon -> "☽"
-                        app.lilaverse.astrostatsandroid.Planet.Mercury -> "☿"
-                        app.lilaverse.astrostatsandroid.Planet.Venus -> "♀"
-                        app.lilaverse.astrostatsandroid.Planet.Mars -> "♂"
-                        app.lilaverse.astrostatsandroid.Planet.Jupiter -> "♃"
-                        app.lilaverse.astrostatsandroid.Planet.Saturn -> "♄"
-                        app.lilaverse.astrostatsandroid.Planet.Uranus -> "♅"
-                        app.lilaverse.astrostatsandroid.Planet.Neptune -> "♆"
-                        app.lilaverse.astrostatsandroid.Planet.Pluto -> "♇"
-                        app.lilaverse.astrostatsandroid.Planet.SouthNode -> "☋"
-                    }
-                    is CelestialObject.SouthNode -> "☋"
-                    else -> "?"
-                }
-
+                val angle = 2 * Math.PI - (Math.toRadians((position - 90).toDouble()) - Math.PI / 2)
                 val planetX = centerX + cos(angle).toFloat() * radius
                 val planetY = centerY + sin(angle).toFloat() * radius
-
+                val glyph = glyphFor(planet)
                 val planetPaint = Paint(textPaint).apply {
                     color = planetColors[glyph] ?: Color.BLACK
-                    textSize = baseFontSize * 2.5f * scaleFactor // Much larger for better visibility
-                    isFakeBoldText = true // Bold for better visibility
+                    this.alpha = paintAlpha
+                    textSize = baseFontSize * 2.5f * scaleFactor * groupShrinkFactor * glyphScale
+                    isFakeBoldText = true
                 }
+
 
                 canvas.drawText(glyph, planetX, planetY + planetPaint.textSize / 3, planetPaint)
 
@@ -516,9 +618,11 @@ class BirthChartView @JvmOverloads constructor(
                 val degreeX = centerX + cos(angle).toFloat() * degreeRadius
                 val degreeY = centerY + sin(angle).toFloat() * degreeRadius
 
-                textPaint.textSize = baseFontSize * 1.2f * scaleFactor
-                canvas.drawText("${degreeInSign}°", degreeX, degreeY + textPaint.textSize / 3, textPaint)
-
+                val degreePaint = Paint(textPaint).apply {
+                    textSize = baseFontSize * 1.2f * scaleFactor * glyphScale
+                    this.alpha = paintAlpha
+                }
+                canvas.drawText("${degreeInSign}°", degreeX, degreeY + degreePaint.textSize / 3, degreePaint)
                 // Draw sign
                 val signIndex = (body.longitude / 30).toInt() % 12
                 val signGlyph = zodiacGlyphs[signIndex]
@@ -528,8 +632,9 @@ class BirthChartView @JvmOverloads constructor(
 
                 val signPaint = Paint(textPaint).apply {
                     color = signColors[signIndex % 12] ?: Color.BLACK
-                    textSize = baseFontSize * 1.8f * scaleFactor  // Larger for visibility
-                    isFakeBoldText = true // Bold for better visibility
+                    this.alpha = paintAlpha
+                    textSize = baseFontSize * 1.8f * scaleFactor * glyphScale
+                    isFakeBoldText = true
                 }
                 canvas.drawText(signGlyph, signX, signY + signPaint.textSize / 3, signPaint)
 
@@ -539,20 +644,50 @@ class BirthChartView @JvmOverloads constructor(
                 val minuteX = centerX + cos(angle).toFloat() * minuteRadius
                 val minuteY = centerY + sin(angle).toFloat() * minuteRadius
 
-                smallTextPaint.textSize = smallBaseFontSize * 1.2f * scaleFactor
-                canvas.drawText("${minuteInSign}'", minuteX, minuteY + smallTextPaint.textSize / 3, smallTextPaint)
-
+                val minutePaint = Paint(smallTextPaint).apply {
+                    textSize = smallBaseFontSize * 1.2f * scaleFactor * glyphScale
+                    this.alpha = paintAlpha
+                }
+                canvas.drawText("${minuteInSign}'", minuteX, minuteY + minutePaint.textSize / 3, minutePaint)
                 // Draw retrograde indicator if velocity is negative
                 if (body.velocity < 0) {
                     val retrogradeRadius = minuteRadius - baseFontSize * 1.5f * scaleFactor
                     val retrogradeX = centerX + cos(angle).toFloat() * retrogradeRadius
                     val retrogradeY = centerY + sin(angle).toFloat() * retrogradeRadius
-                    canvas.drawText("R", retrogradeX, retrogradeY + smallTextPaint.textSize / 3, smallTextPaint)
-                }
+                    canvas.drawText("R", retrogradeX, retrogradeY + minutePaint.textSize / 3, minutePaint) }
 
                 // Log that we're drawing the planet
-                Log.d("BirthChartView", "Drawing planet ${planet.keyName} at angle $position degrees, radius $radius")
+                Log.d(
+                    "BirthChartView",
+                    "Drawing $logLabel planet ${planet.keyName} at angle $position degrees, radius $radius"
+                )
             }
+        }
+    }
+
+    private fun glyphFor(planet: CelestialObject): String {
+        return when (planet) {
+            is CelestialObject.Planet -> when (planet.planet) {
+                app.lilaverse.astrostatsandroid.Planet.Sun -> "☉"
+                app.lilaverse.astrostatsandroid.Planet.Moon -> "☽"
+                app.lilaverse.astrostatsandroid.Planet.Mercury -> "☿"
+                app.lilaverse.astrostatsandroid.Planet.Venus -> "♀"
+                app.lilaverse.astrostatsandroid.Planet.Mars -> "♂"
+                app.lilaverse.astrostatsandroid.Planet.Jupiter -> "♃"
+                app.lilaverse.astrostatsandroid.Planet.Saturn -> "♄"
+                app.lilaverse.astrostatsandroid.Planet.Uranus -> "♅"
+                app.lilaverse.astrostatsandroid.Planet.Neptune -> "♆"
+                app.lilaverse.astrostatsandroid.Planet.Pluto -> "♇"
+                app.lilaverse.astrostatsandroid.Planet.SouthNode -> "☋"
+            }
+            CelestialObject.SouthNode -> "☋"
+            is CelestialObject.SpecialCusp -> when {
+                planet.name.equals("Ascendant", ignoreCase = true) -> "↑"
+                planet.name.equals("Midheaven", ignoreCase = true) -> "⊗"
+                else -> planet.name.firstOrNull()?.toString() ?: "?"
+            }
+            else -> "?"
+
         }
     }
     private fun fixPositionsIfNecessary(planets: List<Float>, houseCusps: HouseCusps): List<Float> {
