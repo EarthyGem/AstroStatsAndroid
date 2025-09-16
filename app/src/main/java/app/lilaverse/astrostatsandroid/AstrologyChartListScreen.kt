@@ -57,29 +57,33 @@ fun AstrologyChartListScreen(
                 modifier = Modifier.padding(vertical = 20.dp)
             )
 
-            // Search bar
-            TextField(
-                value = "",
-                onValueChange = { /* Search functionality */ },
-                placeholder = { Text("Search by name or place", color = Color.Gray) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color(0xFF2A2A2A),
-                    focusedContainerColor = Color(0xFF2A2A2A),
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = Color.Gray
-                    )
-                },
-                singleLine = true
-            )
+            val showSearchBar = charts.size >= 15
+
+            if (showSearchBar) {
+                // Search bar
+                TextField(
+                    value = "",
+                    onValueChange = { /* Search functionality */ },
+                    placeholder = { Text("Search by name or place", color = Color.Gray) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(0xFF2A2A2A),
+                        focusedContainerColor = Color(0xFF2A2A2A),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Color.Gray
+                        )
+                    },
+                    singleLine = true
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

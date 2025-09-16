@@ -1,29 +1,34 @@
 package app.lilaverse.astrostatsandroid
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.compose.foundation.layout.*
 import androidx.compose.ui.platform.LocalContext
-import android.content.Intent
-import androidx.compose.foundation.layout.Arrangement
-import app.lilaverse.astrostatsandroid.chat.ChatActivity
+import androidx.navigation.NavHostController
 import app.lilaverse.astrostatsandroid.model.Chart
-import app.lilaverse.astrostatsandroid.model.*
-import app.lilaverse.astrostatsandroid.*
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostController) {
     val context = LocalContext.current
-    val tabs = listOf("Chart", "Planets", "Signs", "Houses", "Aspects")
+    val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects", "AstroClock")
     var selectedTab by remember { mutableStateOf(0) }
 
     val chartCake = remember(chart) { ChartCake.from(chart) }
 
-    // Core calculations
+    // Calculations (same logic reused)
     val totalPowerScores = remember(chartCake) {
         PlanetStrengthCalculator(
             orbDictionary,
@@ -60,7 +65,7 @@ fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostCo
         ).totalScoresByAspectType(chartCake.bodies)
     }
 
-    // Normalized for display
+    // Normalization
     val planetTriples = totalPowerScores.entries.map {
         val max = totalPowerScores.values.maxOrNull() ?: 1.0
         Triple(it.key.body, (it.value / max * 100f).toFloat(), it.value.toFloat())
@@ -70,6 +75,7 @@ fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostCo
         val max = signScores.values.maxOrNull() ?: 1.0
         Triple(it.key, (it.value / max * 100f).toFloat(), it.value.toFloat())
     }
+
     val maxHouse = houseScores.values.maxOrNull() ?: 1.0
     val houseTriples = houseScores.entries.map {
         Triple(it.key, (it.value / maxHouse * 100f).toFloat(), it.value.toFloat())
@@ -80,55 +86,62 @@ fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostCo
         Triple(it.first, (it.second / max * 100f).toFloat(), it.second.toFloat())
     }
 
-    // UI Tabs
-    Column {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            Button(onClick = {
-                val intent = Intent(context, ChatActivity::class.java).apply {
-                    putExtra("chartCake", chartCake)
-                    putExtra("userName", chart.name)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
                 }
-                context.startActivity(intent)
-            }) {
-                Text("Ask Lila")
-            }
+            )
         }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 8.dp)
+        ) {
+            ScrollableTabRow(
+                selectedTabIndex = selectedTab,
+                edgePadding = 0.dp
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(title, maxLines = 1) }
+                    )
+                }
+            }
 
-        ScrollableTabRow(selectedTabIndex = selectedTab) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title, maxLines = 1) }
+            Spacer(Modifier.height(4.dp))
+
+            when (selectedTab) {
+                0 -> BirthChartTab(chart)
+                1 -> PlanetScoresTab(
+                    planetScores = planetTriples,
+                    houseCusps = chartCake.houseCusps,
+                    chartId = chart.id,
+                    navController = navController
+                )
+                2 -> SignScoresTab(
+                    signScores = signTriples,
+                    chartId = chart.id,
+                    navController = navController
+                )
+                3 -> HouseScoresTab(
+                    houseTriples = houseTriples,
+                    chartId = chart.id,
+                    navController = navController
+                )
+                4 -> AspectScoresTab(
+                    aspectTriples = aspectTriples,
+                    chartId = chart.id,
+                    navController = navController
                 )
             }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        when (selectedTab) {
-            0 -> BirthChartTab(chart)
-            1 -> PlanetScoresTab(
-                planetScores = planetTriples,
-                houseCusps = chartCake.houseCusps,
-                chartId = chart.id,
-                navController = navController
-            )
-            2 -> SignScoresTab(
-                signScores = signTriples,
-                chartId = chart.id,
-                navController = navController
-            )
-            3 -> HouseScoresTab(
-                houseTriples = houseTriples,
-                chartId = chart.id,
-                navController = navController
-            )
-            4 -> AspectScoresTab(
-                aspectTriples = aspectTriples,
-                chartId = chart.id,
-                navController = navController
-            )
         }
     }
 }

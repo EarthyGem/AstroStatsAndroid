@@ -11,6 +11,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -295,12 +297,14 @@ fun ChartInputScreen(
             }
         }
     }
+    val scrollState = rememberScrollState()
 
     // UI starts here
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF1A1A2E))
+            .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
         Text(
@@ -423,9 +427,12 @@ fun ChartInputScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             OutlinedButton(
                 onClick = onCancel,
                 modifier = Modifier.weight(1f),

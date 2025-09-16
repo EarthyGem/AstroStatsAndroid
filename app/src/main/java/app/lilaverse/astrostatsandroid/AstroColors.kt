@@ -5,15 +5,15 @@ import androidx.compose.ui.graphics.Color
 object AstroColors {
     // Planet colors (based on their symbolic vibration)
     val Sun = Color(0xFFFFA500)       // Orange
-    val Moon = Color(0xFF00FF7F)      // Green
+    val Moon = Color(0xFF008B45)      // Darker Green (was #00FF7F)
     val Mercury = Color(0xFF8A2BE2)   // Violet
-    val Venus = Color(0xFFFFFF00)     // Yellow
+    val Venus = Color(0xFFB8860B)     // Dark Golden Yellow (was #FFFF00)
     val Mars = Color(0xFFFF0000)      // Red
     val Jupiter = Color(0xFF4B0082)   // Indigo
     val Saturn = Color(0xFF0000FF)    // Blue
-    val Uranus = Color(0xFFFFFFFF)    // White
-    val Neptune = Color(0xFFAFEEEE)   // Iridescent / Aqua
-    val Pluto = Color(0xFF8B0000)     // Deep Red (UV/IR stand-in)
+    val Uranus = Color(0xFF000000)    // Black (was White)
+    val Neptune = Color(0xFF4682B4)   // Steel Blue (darker aqua, was #AFEEEE)
+    val Pluto = Color(0xFF8B0000)     // Deep Red
 
     // Sign mappings (masculine = light, feminine = dark)
     fun signColor(sign: String): Color = when (sign) {
