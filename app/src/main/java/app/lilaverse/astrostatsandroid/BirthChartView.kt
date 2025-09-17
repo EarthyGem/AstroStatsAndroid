@@ -418,7 +418,7 @@ class BirthChartView @JvmOverloads constructor(
 
     private fun drawPlanetsWithData(canvas: Canvas, centerX: Float, centerY: Float, planetRadius: Float) {
         if (planets.isEmpty()) {
-            Log.d("BirthChartView", "No planets to draw: planets list is empty")
+           // Log.d("BirthChartView", "No planets to draw: planets list is empty")
             return
         }
 
@@ -476,7 +476,7 @@ class BirthChartView @JvmOverloads constructor(
                 canvas.drawText(planet.glyph, planetX, planetY + planetPaint.textSize / 3, planetPaint)
 
                 // Debug logging
-                Log.d("BirthChartView", "Drawing planet ${planet.name} at $adjustedDegree° (jittered), radius $radius, shrinkFactor=$groupShrinkFactor")
+              //  Log.d("BirthChartView", "Drawing planet ${planet.name} at $adjustedDegree° (jittered), radius $radius, shrinkFactor=$groupShrinkFactor")
             }
         }
     }
@@ -548,12 +548,12 @@ class BirthChartView @JvmOverloads constructor(
         logLabel: String
     ) {
         if (positions.isEmpty()) {
-            Log.d("BirthChartView", "No planet positions to draw for $logLabel chart")
+         //   Log.d("BirthChartView", "No planet positions to draw for $logLabel chart")
             return
         }
 
         // Debug log
-        Log.d("BirthChartView", "Drawing ${positions.size} planets for $logLabel chart")
+     //   Log.d("BirthChartView", "Drawing ${positions.size} planets for $logLabel chart")
         val MIN_SPACING = 4f
         val sortedPlanets = positions.entries.sortedBy { it.value }
         val planetGroups = mutableListOf<MutableList<Pair<CelestialObject, Float>>>()
@@ -657,10 +657,10 @@ class BirthChartView @JvmOverloads constructor(
                     canvas.drawText("R", retrogradeX, retrogradeY + minutePaint.textSize / 3, minutePaint) }
 
                 // Log that we're drawing the planet
-                Log.d(
-                    "BirthChartView",
-                    "Drawing $logLabel planet ${planet.keyName} at angle $position degrees, radius $radius"
-                )
+//                Log.d(
+//                    "BirthChartView",
+//                    "Drawing $logLabel planet ${planet.keyName} at angle $position degrees, radius $radius"
+//                )
             }
         }
     }

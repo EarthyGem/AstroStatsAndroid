@@ -49,7 +49,7 @@ public final class ChartDao_Impl implements ChartDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `Chart` (`id`,`name`,`date`,`birthPlace`,`locationName`,`latitude`,`longitude`,`timezone`,`planetaryPositions`,`sunSign`,`moonSign`,`risingSign`,`houseCusps`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `Chart` (`id`,`name`,`date`,`birthPlace`,`locationName`,`latitude`,`longitude`,`timezone`,`timezoneId`,`timezoneLabel`,`rawOffsetMinutes`,`dstOffsetMinutes`,`isDstActive`,`planetaryPositions`,`sunSign`,`moonSign`,`risingSign`,`houseCusps`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -80,32 +80,46 @@ public final class ChartDao_Impl implements ChartDao {
         } else {
           statement.bindString(8, entity.getTimezone());
         }
-        final String _tmp_1 = __converters.fromStringList(entity.getPlanetaryPositions());
-        if (_tmp_1 == null) {
+        if (entity.getTimezoneId() == null) {
           statement.bindNull(9);
         } else {
-          statement.bindString(9, _tmp_1);
+          statement.bindString(9, entity.getTimezoneId());
         }
-        if (entity.getSunSign() == null) {
+        if (entity.getTimezoneLabel() == null) {
           statement.bindNull(10);
         } else {
-          statement.bindString(10, entity.getSunSign());
+          statement.bindString(10, entity.getTimezoneLabel());
+        }
+        statement.bindLong(11, entity.getRawOffsetMinutes());
+        statement.bindLong(12, entity.getDstOffsetMinutes());
+        final int _tmp_1 = entity.isDstActive() ? 1 : 0;
+        statement.bindLong(13, _tmp_1);
+        final String _tmp_2 = __converters.fromStringList(entity.getPlanetaryPositions());
+        if (_tmp_2 == null) {
+          statement.bindNull(14);
+        } else {
+          statement.bindString(14, _tmp_2);
+        }
+        if (entity.getSunSign() == null) {
+          statement.bindNull(15);
+        } else {
+          statement.bindString(15, entity.getSunSign());
         }
         if (entity.getMoonSign() == null) {
-          statement.bindNull(11);
+          statement.bindNull(16);
         } else {
-          statement.bindString(11, entity.getMoonSign());
+          statement.bindString(16, entity.getMoonSign());
         }
         if (entity.getRisingSign() == null) {
-          statement.bindNull(12);
+          statement.bindNull(17);
         } else {
-          statement.bindString(12, entity.getRisingSign());
+          statement.bindString(17, entity.getRisingSign());
         }
-        final String _tmp_2 = __converters.fromHouseCusps(entity.getHouseCusps());
-        if (_tmp_2 == null) {
-          statement.bindNull(13);
+        final String _tmp_3 = __converters.fromHouseCusps(entity.getHouseCusps());
+        if (_tmp_3 == null) {
+          statement.bindNull(18);
         } else {
-          statement.bindString(13, _tmp_2);
+          statement.bindString(18, _tmp_3);
         }
       }
     };
@@ -133,7 +147,7 @@ public final class ChartDao_Impl implements ChartDao {
   }
 
   @Override
-  public Object insertChart(final Chart chart, final Continuation<? super Unit> $completion) {
+  public Object insertChart(final Chart chart, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -147,11 +161,11 @@ public final class ChartDao_Impl implements ChartDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object deleteChart(final Chart chart, final Continuation<? super Unit> $completion) {
+  public Object deleteChart(final Chart chart, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -165,11 +179,11 @@ public final class ChartDao_Impl implements ChartDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object deleteAllCharts(final Continuation<? super Unit> $completion) {
+  public Object deleteAllCharts(final Continuation<? super Unit> arg0) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -188,7 +202,7 @@ public final class ChartDao_Impl implements ChartDao {
           __preparedStmtOfDeleteAllCharts.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg0);
   }
 
   @Override
@@ -209,6 +223,11 @@ public final class ChartDao_Impl implements ChartDao {
           final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
           final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
           final int _cursorIndexOfTimezone = CursorUtil.getColumnIndexOrThrow(_cursor, "timezone");
+          final int _cursorIndexOfTimezoneId = CursorUtil.getColumnIndexOrThrow(_cursor, "timezoneId");
+          final int _cursorIndexOfTimezoneLabel = CursorUtil.getColumnIndexOrThrow(_cursor, "timezoneLabel");
+          final int _cursorIndexOfRawOffsetMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "rawOffsetMinutes");
+          final int _cursorIndexOfDstOffsetMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "dstOffsetMinutes");
+          final int _cursorIndexOfIsDstActive = CursorUtil.getColumnIndexOrThrow(_cursor, "isDstActive");
           final int _cursorIndexOfPlanetaryPositions = CursorUtil.getColumnIndexOrThrow(_cursor, "planetaryPositions");
           final int _cursorIndexOfSunSign = CursorUtil.getColumnIndexOrThrow(_cursor, "sunSign");
           final int _cursorIndexOfMoonSign = CursorUtil.getColumnIndexOrThrow(_cursor, "moonSign");
@@ -251,14 +270,34 @@ public final class ChartDao_Impl implements ChartDao {
             } else {
               _tmpTimezone = _cursor.getString(_cursorIndexOfTimezone);
             }
-            final List<String> _tmpPlanetaryPositions;
-            final String _tmp_1;
-            if (_cursor.isNull(_cursorIndexOfPlanetaryPositions)) {
-              _tmp_1 = null;
+            final String _tmpTimezoneId;
+            if (_cursor.isNull(_cursorIndexOfTimezoneId)) {
+              _tmpTimezoneId = null;
             } else {
-              _tmp_1 = _cursor.getString(_cursorIndexOfPlanetaryPositions);
+              _tmpTimezoneId = _cursor.getString(_cursorIndexOfTimezoneId);
             }
-            _tmpPlanetaryPositions = __converters.toStringList(_tmp_1);
+            final String _tmpTimezoneLabel;
+            if (_cursor.isNull(_cursorIndexOfTimezoneLabel)) {
+              _tmpTimezoneLabel = null;
+            } else {
+              _tmpTimezoneLabel = _cursor.getString(_cursorIndexOfTimezoneLabel);
+            }
+            final int _tmpRawOffsetMinutes;
+            _tmpRawOffsetMinutes = _cursor.getInt(_cursorIndexOfRawOffsetMinutes);
+            final int _tmpDstOffsetMinutes;
+            _tmpDstOffsetMinutes = _cursor.getInt(_cursorIndexOfDstOffsetMinutes);
+            final boolean _tmpIsDstActive;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsDstActive);
+            _tmpIsDstActive = _tmp_1 != 0;
+            final List<String> _tmpPlanetaryPositions;
+            final String _tmp_2;
+            if (_cursor.isNull(_cursorIndexOfPlanetaryPositions)) {
+              _tmp_2 = null;
+            } else {
+              _tmp_2 = _cursor.getString(_cursorIndexOfPlanetaryPositions);
+            }
+            _tmpPlanetaryPositions = __converters.toStringList(_tmp_2);
             final String _tmpSunSign;
             if (_cursor.isNull(_cursorIndexOfSunSign)) {
               _tmpSunSign = null;
@@ -278,14 +317,14 @@ public final class ChartDao_Impl implements ChartDao {
               _tmpRisingSign = _cursor.getString(_cursorIndexOfRisingSign);
             }
             final HouseCusps _tmpHouseCusps;
-            final String _tmp_2;
+            final String _tmp_3;
             if (_cursor.isNull(_cursorIndexOfHouseCusps)) {
-              _tmp_2 = null;
+              _tmp_3 = null;
             } else {
-              _tmp_2 = _cursor.getString(_cursorIndexOfHouseCusps);
+              _tmp_3 = _cursor.getString(_cursorIndexOfHouseCusps);
             }
-            _tmpHouseCusps = __converters.toHouseCusps(_tmp_2);
-            _item = new Chart(_tmpId,_tmpName,_tmpDate,_tmpBirthPlace,_tmpLocationName,_tmpLatitude,_tmpLongitude,_tmpTimezone,_tmpPlanetaryPositions,_tmpSunSign,_tmpMoonSign,_tmpRisingSign,_tmpHouseCusps);
+            _tmpHouseCusps = __converters.toHouseCusps(_tmp_3);
+            _item = new Chart(_tmpId,_tmpName,_tmpDate,_tmpBirthPlace,_tmpLocationName,_tmpLatitude,_tmpLongitude,_tmpTimezone,_tmpTimezoneId,_tmpTimezoneLabel,_tmpRawOffsetMinutes,_tmpDstOffsetMinutes,_tmpIsDstActive,_tmpPlanetaryPositions,_tmpSunSign,_tmpMoonSign,_tmpRisingSign,_tmpHouseCusps);
             _result.add(_item);
           }
           return _result;
@@ -302,7 +341,7 @@ public final class ChartDao_Impl implements ChartDao {
   }
 
   @Override
-  public Object getChartById(final int id, final Continuation<? super Chart> $completion) {
+  public Object getChartById(final int id, final Continuation<? super Chart> arg1) {
     final String _sql = "SELECT * FROM Chart WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -322,6 +361,11 @@ public final class ChartDao_Impl implements ChartDao {
           final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
           final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
           final int _cursorIndexOfTimezone = CursorUtil.getColumnIndexOrThrow(_cursor, "timezone");
+          final int _cursorIndexOfTimezoneId = CursorUtil.getColumnIndexOrThrow(_cursor, "timezoneId");
+          final int _cursorIndexOfTimezoneLabel = CursorUtil.getColumnIndexOrThrow(_cursor, "timezoneLabel");
+          final int _cursorIndexOfRawOffsetMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "rawOffsetMinutes");
+          final int _cursorIndexOfDstOffsetMinutes = CursorUtil.getColumnIndexOrThrow(_cursor, "dstOffsetMinutes");
+          final int _cursorIndexOfIsDstActive = CursorUtil.getColumnIndexOrThrow(_cursor, "isDstActive");
           final int _cursorIndexOfPlanetaryPositions = CursorUtil.getColumnIndexOrThrow(_cursor, "planetaryPositions");
           final int _cursorIndexOfSunSign = CursorUtil.getColumnIndexOrThrow(_cursor, "sunSign");
           final int _cursorIndexOfMoonSign = CursorUtil.getColumnIndexOrThrow(_cursor, "moonSign");
@@ -363,14 +407,34 @@ public final class ChartDao_Impl implements ChartDao {
             } else {
               _tmpTimezone = _cursor.getString(_cursorIndexOfTimezone);
             }
-            final List<String> _tmpPlanetaryPositions;
-            final String _tmp_1;
-            if (_cursor.isNull(_cursorIndexOfPlanetaryPositions)) {
-              _tmp_1 = null;
+            final String _tmpTimezoneId;
+            if (_cursor.isNull(_cursorIndexOfTimezoneId)) {
+              _tmpTimezoneId = null;
             } else {
-              _tmp_1 = _cursor.getString(_cursorIndexOfPlanetaryPositions);
+              _tmpTimezoneId = _cursor.getString(_cursorIndexOfTimezoneId);
             }
-            _tmpPlanetaryPositions = __converters.toStringList(_tmp_1);
+            final String _tmpTimezoneLabel;
+            if (_cursor.isNull(_cursorIndexOfTimezoneLabel)) {
+              _tmpTimezoneLabel = null;
+            } else {
+              _tmpTimezoneLabel = _cursor.getString(_cursorIndexOfTimezoneLabel);
+            }
+            final int _tmpRawOffsetMinutes;
+            _tmpRawOffsetMinutes = _cursor.getInt(_cursorIndexOfRawOffsetMinutes);
+            final int _tmpDstOffsetMinutes;
+            _tmpDstOffsetMinutes = _cursor.getInt(_cursorIndexOfDstOffsetMinutes);
+            final boolean _tmpIsDstActive;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsDstActive);
+            _tmpIsDstActive = _tmp_1 != 0;
+            final List<String> _tmpPlanetaryPositions;
+            final String _tmp_2;
+            if (_cursor.isNull(_cursorIndexOfPlanetaryPositions)) {
+              _tmp_2 = null;
+            } else {
+              _tmp_2 = _cursor.getString(_cursorIndexOfPlanetaryPositions);
+            }
+            _tmpPlanetaryPositions = __converters.toStringList(_tmp_2);
             final String _tmpSunSign;
             if (_cursor.isNull(_cursorIndexOfSunSign)) {
               _tmpSunSign = null;
@@ -390,14 +454,14 @@ public final class ChartDao_Impl implements ChartDao {
               _tmpRisingSign = _cursor.getString(_cursorIndexOfRisingSign);
             }
             final HouseCusps _tmpHouseCusps;
-            final String _tmp_2;
+            final String _tmp_3;
             if (_cursor.isNull(_cursorIndexOfHouseCusps)) {
-              _tmp_2 = null;
+              _tmp_3 = null;
             } else {
-              _tmp_2 = _cursor.getString(_cursorIndexOfHouseCusps);
+              _tmp_3 = _cursor.getString(_cursorIndexOfHouseCusps);
             }
-            _tmpHouseCusps = __converters.toHouseCusps(_tmp_2);
-            _result = new Chart(_tmpId,_tmpName,_tmpDate,_tmpBirthPlace,_tmpLocationName,_tmpLatitude,_tmpLongitude,_tmpTimezone,_tmpPlanetaryPositions,_tmpSunSign,_tmpMoonSign,_tmpRisingSign,_tmpHouseCusps);
+            _tmpHouseCusps = __converters.toHouseCusps(_tmp_3);
+            _result = new Chart(_tmpId,_tmpName,_tmpDate,_tmpBirthPlace,_tmpLocationName,_tmpLatitude,_tmpLongitude,_tmpTimezone,_tmpTimezoneId,_tmpTimezoneLabel,_tmpRawOffsetMinutes,_tmpDstOffsetMinutes,_tmpIsDstActive,_tmpPlanetaryPositions,_tmpSunSign,_tmpMoonSign,_tmpRisingSign,_tmpHouseCusps);
           } else {
             _result = null;
           }
@@ -407,7 +471,7 @@ public final class ChartDao_Impl implements ChartDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @NonNull

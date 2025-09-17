@@ -31,12 +31,12 @@ public final class ChartDatabase_Impl extends ChartDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `Chart` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `date` INTEGER NOT NULL, `birthPlace` TEXT NOT NULL, `locationName` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timezone` TEXT NOT NULL, `planetaryPositions` TEXT NOT NULL, `sunSign` TEXT NOT NULL, `moonSign` TEXT NOT NULL, `risingSign` TEXT NOT NULL, `houseCusps` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `Chart` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `date` INTEGER NOT NULL, `birthPlace` TEXT NOT NULL, `locationName` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timezone` TEXT NOT NULL, `timezoneId` TEXT NOT NULL, `timezoneLabel` TEXT, `rawOffsetMinutes` INTEGER NOT NULL, `dstOffsetMinutes` INTEGER NOT NULL, `isDstActive` INTEGER NOT NULL, `planetaryPositions` TEXT NOT NULL, `sunSign` TEXT NOT NULL, `moonSign` TEXT NOT NULL, `risingSign` TEXT NOT NULL, `houseCusps` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e8b11b96c460f155157288dae7460573')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e0a0178d96165a4840084b27825025e6')");
       }
 
       @Override
@@ -85,7 +85,7 @@ public final class ChartDatabase_Impl extends ChartDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsChart = new HashMap<String, TableInfo.Column>(13);
+        final HashMap<String, TableInfo.Column> _columnsChart = new HashMap<String, TableInfo.Column>(18);
         _columnsChart.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("date", new TableInfo.Column("date", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -94,6 +94,11 @@ public final class ChartDatabase_Impl extends ChartDatabase {
         _columnsChart.put("latitude", new TableInfo.Column("latitude", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("longitude", new TableInfo.Column("longitude", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("timezone", new TableInfo.Column("timezone", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsChart.put("timezoneId", new TableInfo.Column("timezoneId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsChart.put("timezoneLabel", new TableInfo.Column("timezoneLabel", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsChart.put("rawOffsetMinutes", new TableInfo.Column("rawOffsetMinutes", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsChart.put("dstOffsetMinutes", new TableInfo.Column("dstOffsetMinutes", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsChart.put("isDstActive", new TableInfo.Column("isDstActive", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("planetaryPositions", new TableInfo.Column("planetaryPositions", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("sunSign", new TableInfo.Column("sunSign", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsChart.put("moonSign", new TableInfo.Column("moonSign", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -110,7 +115,7 @@ public final class ChartDatabase_Impl extends ChartDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "e8b11b96c460f155157288dae7460573", "92e1264b56e4d676b4067a602152d9c4");
+    }, "e0a0178d96165a4840084b27825025e6", "c02cec15af0d0588c860b13af13dcaf9");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

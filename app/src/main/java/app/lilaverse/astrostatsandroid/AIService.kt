@@ -26,7 +26,7 @@ class ClaudeService(private val apiKey: String) : AIService {
     }
 
     override fun generateResponse(prompt: String, callback: (String?) -> Unit) {
-        Log.d(TAG, "ClaudeService.generateResponse called with updated models")
+     //   Log.d(TAG, "ClaudeService.generateResponse called with updated models")
 
         val client = OkHttpClient.Builder()
             .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)

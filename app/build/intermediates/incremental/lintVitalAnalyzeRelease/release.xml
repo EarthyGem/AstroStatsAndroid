@@ -4,9 +4,9 @@
     minSdkVersion="24"
     targetSdkVersion="35"
     mergedManifest="build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml"
-    proguardFiles="build/intermediates/default_proguard_files/global/proguard-android-optimize.txt-8.9.2:proguard-rules.pro"
+    proguardFiles="build/intermediates/default_proguard_files/global/proguard-android-optimize.txt-8.13.0:proguard-rules.pro"
     partialResultsDir="build/intermediates/lint_vital_partial_results/release/lintVitalAnalyzeRelease/out"
-    desugaredMethodsFiles="/Users/errickmiron/.gradle/caches/8.11.1/transforms/9f51be75beba4a20ff55c3c0f85fe0a9/transformed/desugar_jdk_libs_configuration-2.0.4-desugar-lint.txt:/Users/errickmiron/.gradle/caches/8.11.1/transforms/fb1f6fadaa6f2522ee05ebadab034fa7/transformed/D8BackportedDesugaredMethods.txt">
+    desugaredMethodsFiles="/Users/errickmiron/.gradle/caches/8.13/transforms/c1d37b9b700f9cff62b1d64171fe920a/transformed/desugar_jdk_libs_configuration-2.0.4-desugar-lint.txt:/Users/errickmiron/.gradle/caches/8.13/transforms/77aeaa6cee53289a92ccc9cea49f7ad2/transformed/D8BackportedDesugaredMethods.txt">
   <buildFeatures
       coreLibraryDesugaring="true"
       viewBinding="true"
@@ -28,6 +28,6 @@
       applicationId="app.lilaverse.astrostatsandroid"
       generatedSourceFolders="build/generated/source/kapt/release:build/generated/ap_generated_sources/release/out:build/generated/source/buildConfig/release:build/generated/data_binding_base_class_source_out/release/out"
       generatedResourceFolders="build/generated/res/processReleaseGoogleServices:build/generated/res/resValues/release"
-      desugaredMethodsFiles="/Users/errickmiron/.gradle/caches/8.11.1/transforms/9f51be75beba4a20ff55c3c0f85fe0a9/transformed/desugar_jdk_libs_configuration-2.0.4-desugar-lint.txt:/Users/errickmiron/.gradle/caches/8.11.1/transforms/fb1f6fadaa6f2522ee05ebadab034fa7/transformed/D8BackportedDesugaredMethods.txt">
+      desugaredMethodsFiles="/Users/errickmiron/.gradle/caches/8.13/transforms/c1d37b9b700f9cff62b1d64171fe920a/transformed/desugar_jdk_libs_configuration-2.0.4-desugar-lint.txt:/Users/errickmiron/.gradle/caches/8.13/transforms/77aeaa6cee53289a92ccc9cea49f7ad2/transformed/D8BackportedDesugaredMethods.txt">
   </artifact>
 </variant>

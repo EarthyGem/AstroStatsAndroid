@@ -5,7 +5,7 @@ import androidx.room.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
-@Database(entities = [Chart::class], version = 1, exportSchema = false)
+@Database(entities = [Chart::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ChartDatabase : RoomDatabase() {
     abstract fun chartDao(): ChartDao

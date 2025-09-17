@@ -25,6 +25,8 @@ string google_app_id
 string google_crash_reporting_api_key
 string google_storage_bucket
 string project_id
+style SpinnerDatePickerDialog
+style SpinnerDatePickerStyle
 style Theme.AstroStatsAndroid
 xml backup_rules
 xml data_extraction_rules

@@ -39,7 +39,7 @@ class BirthChartInputActivity : AppCompatActivity() {
     private val placeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        Log.d(TAG, "Place launcher result received: ${result.resultCode}")
+     //   Log.d(TAG, "Place launcher result received: ${result.resultCode}")
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
             if (data != null) {
@@ -61,14 +61,14 @@ class BirthChartInputActivity : AppCompatActivity() {
                 updateDebugText("Place result data is null")
             }
         } else {
-            Log.d(TAG, "Place selection cancelled or failed: ${result.resultCode}")
+         //   Log.d(TAG, "Place selection cancelled or failed: ${result.resultCode}")
             updateDebugText("Place selection cancelled or failed: ${result.resultCode}")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate called")
+       // Log.d(TAG, "onCreate called")
 
         // Initialize Places API with extensive error logging
         try {
@@ -80,16 +80,16 @@ class BirthChartInputActivity : AppCompatActivity() {
                 false
             }
 
-            Log.d(TAG, "Places API initialized status: $isInitialized")
+          //  Log.d(TAG, "Places API initialized status: $isInitialized")
 
             if (!isInitialized) {
                 // Replace with your actual API key here for testing
                 val apiKey = "AIzaSyCZ0oIHzY9HILZDvSkOR9q4yQsV80Ae0s8"
-                Log.d(TAG, "Initializing Places API with key length: ${apiKey.length}")
+              //  Log.d(TAG, "Initializing Places API with key length: ${apiKey.length}")
 
                 try {
                     Places.initialize(applicationContext, apiKey)
-                    Log.d(TAG, "Places API initialization successful")
+                 //   Log.d(TAG, "Places API initialization successful")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error during Places.initialize(): ${e.message}", e)
                     // Show error to user
@@ -122,7 +122,7 @@ class BirthChartInputActivity : AppCompatActivity() {
             text = "Select Place of Birth"
             setPadding(20, 30, 20, 30)
             setOnClickListener {
-                Log.d(TAG, "Place field clicked")
+           //     Log.d(TAG, "Place field clicked")
                 updateDebugText("Place field clicked, launching picker...")
                 launchPlacePicker()
             }
@@ -131,7 +131,7 @@ class BirthChartInputActivity : AppCompatActivity() {
         dateButton = Button(this).apply {
             text = "Select Date"
             setOnClickListener {
-                Log.d(TAG, "Date button clicked")
+           //     Log.d(TAG, "Date button clicked")
                 showDatePicker()
             }
         }
@@ -139,7 +139,7 @@ class BirthChartInputActivity : AppCompatActivity() {
         timeButton = Button(this).apply {
             text = "Select Time"
             setOnClickListener {
-                Log.d(TAG, "Time button clicked")
+             //   Log.d(TAG, "Time button clicked")
                 showTimePicker()
             }
         }
@@ -156,7 +156,7 @@ class BirthChartInputActivity : AppCompatActivity() {
             text = "Save"
             setPadding(30, 30, 30, 30)
             setOnClickListener {
-                Log.d(TAG, "Save button clicked")
+           //     Log.d(TAG, "Save button clicked")
                 val chartName = nameField.text.toString()
                 val place = placeField.text.toString()
                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
@@ -198,7 +198,7 @@ class BirthChartInputActivity : AppCompatActivity() {
     }
 
     private fun updateDebugText(message: String) {
-        Log.d(TAG, message)
+     //   Log.d(TAG, message)
         runOnUiThread {
             debugText.text = message
         }
@@ -225,11 +225,11 @@ class BirthChartInputActivity : AppCompatActivity() {
             )
 
             try {
-                Log.d(TAG, "Building Autocomplete intent")
+              //  Log.d(TAG, "Building Autocomplete intent")
                 val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
                     .build(this)
 
-                Log.d(TAG, "Launching place picker activity")
+            //    Log.d(TAG, "Launching place picker activity")
                 placeLauncher.launch(intent)
                 updateDebugText("Place picker launched successfully")
 
@@ -271,7 +271,7 @@ class BirthChartInputActivity : AppCompatActivity() {
 
                     if (jsonResponse.getString("status") == "OK") {
                         timezone = jsonResponse.getString("timeZoneId")
-                        Log.d(TAG, "Retrieved timezone for location: $timezone")
+                   //     Log.d(TAG, "Retrieved timezone for location: $timezone")
 
                         // Adjust the birth date to use the correct timezone
                         updateBirthDateTimezone()
@@ -313,15 +313,29 @@ class BirthChartInputActivity : AppCompatActivity() {
         val month = birthDate.get(Calendar.MONTH)
         val day = birthDate.get(Calendar.DAY_OF_MONTH)
 
-        DatePickerDialog(this, { _, y, m, d ->
-            birthDate.set(Calendar.YEAR, y)
-            birthDate.set(Calendar.MONTH, m)
-            birthDate.set(Calendar.DAY_OF_MONTH, d)
-            val dateStr = "Date: ${y}-${m + 1}-${d}"
-            dateButton.text = dateStr
-            Log.d(TAG, "Date selected: $dateStr")
-            updateDebugText("Date selected: $dateStr")
-        }, year, month, day).show()
+        val datePickerDialog = DatePickerDialog(
+            this,
+            R.style.SpinnerDatePickerDialog,
+            { _, y, m, d ->
+                birthDate.set(Calendar.YEAR, y)
+                birthDate.set(Calendar.MONTH, m)
+                birthDate.set(Calendar.DAY_OF_MONTH, d)
+                val dateStr = "Date: ${y}-${m + 1}-${d}"
+                dateButton.text = dateStr
+                Log.d(TAG, "Date selected: $dateStr")
+                updateDebugText("Date selected: $dateStr")
+            },
+            year,
+            month,
+            day
+        ).apply {
+            datePicker.apply {
+                calendarViewShown = false
+                spinnersShown = true
+            }
+        }
+
+        datePickerDialog.show()
     }
 
     private fun showTimePicker() {
@@ -333,13 +347,13 @@ class BirthChartInputActivity : AppCompatActivity() {
             birthDate.set(Calendar.MINUTE, m)
             val timeStr = "Time: %02d:%02d".format(h, m)
             timeButton.text = timeStr
-            Log.d(TAG, "Time selected: $timeStr")
+         //   Log.d(TAG, "Time selected: $timeStr")
             updateDebugText("Time selected: $timeStr")
         }, hour, minute, true).show()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy called")
+    //    Log.d(TAG, "onDestroy called")
     }
 }

@@ -21,12 +21,15 @@ fun ChartDetailScreen(chart: Chart, navController: NavController? = null) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        val timezoneSummary = chart.timezoneLabel?.takeIf { it.isNotBlank() } ?: chart.timezoneId
+        val dstStatus = if (chart.isDstActive) "DST On" else "DST Off"
         Text(chart.name, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
         Text("Born in ${chart.birthPlace}")
         Text("Date: ${chart.date}")
-        Text("Time Zone: ${chart.timezone}")
+        Text("Time Zone: $timezoneSummary")
+        Text("Offset Used: ${chart.timezone} • $dstStatus")
         Spacer(modifier = Modifier.height(8.dp))
 
         Text("☉ Sun: ${chart.sunSign}")

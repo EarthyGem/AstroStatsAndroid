@@ -4,7 +4,7 @@
     name=":app"
     type="APP"
     maven="AstroStatsAndroid:app:unspecified"
-    agpVersion="8.9.2"
+    agpVersion="8.13.0"
     buildFolder="build"
     bootClassPath="/Users/errickmiron/Library/Android/sdk/platforms/android-35/android.jar:/Users/errickmiron/Library/Android/sdk/build-tools/35.0.0/core-lambda-stubs.jar"
     javaSourceLevel="11"

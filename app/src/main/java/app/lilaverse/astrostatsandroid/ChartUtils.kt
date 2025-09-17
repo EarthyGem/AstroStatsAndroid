@@ -156,21 +156,21 @@ object ChartUtils {
     
     // Log chart data for debugging
     fun logChartData(chartCake: ChartCake, powerScores: Map<Coordinate, Double>) {
-        Log.d("ChartUtils", "📊 Chart Data Summary:")
+     //   Log.d("ChartUtils", "📊 Chart Data Summary:")
         
         // Log planet positions and power scores
-        Log.d("ChartUtils", "🪐 Planet Positions and Power:")
+     //   Log.d("ChartUtils", "🪐 Planet Positions and Power:")
         chartCake.natalBodies.forEach { body ->
             val score = powerScores[body] ?: 0.0
-            Log.d("ChartUtils", "${body.body.keyName}: ${formatLongitude(body.longitude)} - Power: $score")
+          //  Log.d("ChartUtils", "${body.body.keyName}: ${formatLongitude(body.longitude)} - Power: $score")
         }
         
         // Log house cusps
-        Log.d("ChartUtils", "🏠 House Cusps:")
+      //  Log.d("ChartUtils", "🏠 House Cusps:")
         val houseCusps = chartCake.houseCusps
         for (i in 0 until 12) {
             val cusp = houseCusps.getCusp(i)
-            Log.d("ChartUtils", "House ${i+1}: ${formatLongitude(cusp.longitude)}")
+         //   Log.d("ChartUtils", "House ${i+1}: ${formatLongitude(cusp.longitude)}")
         }
     }
 }

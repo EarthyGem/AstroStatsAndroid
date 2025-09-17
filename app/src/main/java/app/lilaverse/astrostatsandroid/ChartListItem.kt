@@ -27,6 +27,8 @@ fun ChartListItem(chart: Chart, chartCake: ChartCake, onClick: () -> Unit) {
     }
 
     val dateText = dateFormat.format(chart.date)
+    val timezoneSummary = chart.timezoneLabel?.takeIf { it.isNotBlank() } ?: chart.timezoneId
+    val dstStatus = if (chart.isDstActive) "DST On" else "DST Off"
 
 
     val totalPowerScores = remember(chartCake) {
@@ -100,6 +102,11 @@ fun ChartListItem(chart: Chart, chartCake: ChartCake, onClick: () -> Unit) {
             Text(
                 "$dateText • ${chart.birthPlace}",
                 fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Text(
+                "TZ: $timezoneSummary • ${chart.timezone} • $dstStatus",
+                fontSize = 12.sp,
                 color = Color.Gray
             )
             Text(

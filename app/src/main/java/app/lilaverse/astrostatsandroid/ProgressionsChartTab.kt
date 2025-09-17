@@ -41,7 +41,7 @@ fun ProgressionsTab(chart: Chart, chartCake: ChartCake) {
         )
 
         Text(
-            text = "Progressions moment: $transitDateText",
+            text = "Progressions for: $transitDateText",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
