@@ -103,8 +103,11 @@ class MainActivity : ComponentActivity() {
                         val chart = chartList.find { it.id == chartId }
                         val chartCake = navController.previousBackStackEntry?.savedStateHandle?.get<ChartCake>("chartCake")
                         if (chart != null && chartCake != null) {
-                            ChartTabsScreen(chart = chart, chartCake = chartCake, navController = navController)
-
+                            ChartTabsScreen(
+                                chart = chart,
+                                navController = navController,
+                                allCharts = chartList
+                            )
                         }
                     }
                     composable(

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import android.util.Log
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import kotlin.math.roundToInt
-
+import kotlin.math.abs
 @Composable
 fun AstrologyChartListScreen(
     charts: List<Chart>,
@@ -180,14 +181,16 @@ fun SwipeableChartItem(
     val editThreshold = -triggerDistance
     val deleteThreshold = triggerDistance
 
-    // Offset state
-    var offsetX by remember { mutableStateOf(0f) }
+    // Offset state - key it to chart.id to ensure each chart has independent state
+    var offsetX by remember(chart.id) { mutableStateOf(0f) }
 
     // Draggable state
     val draggableState = rememberDraggableState { delta ->
         offsetX += delta
     }
-    val chartCake = remember(chart) { ChartCake.from(chart) }
+
+    // Key the chartCake to chart.id for stability
+    val chartCake = remember(chart.id) { ChartCake.from(chart) }
 
     Box {
         // Background with actions
@@ -248,29 +251,33 @@ fun SwipeableChartItem(
                         when {
                             offsetX > deleteThreshold -> {
                                 // Swiped right (to reveal edit)
+                                Log.d("SwipeableChartItem", "Edit action for ${chart.name}")
                                 onEdit()
                                 offsetX = 0f // Reset position
                             }
                             offsetX < editThreshold -> {
                                 // Swiped left (to reveal delete)
+                                Log.d("SwipeableChartItem", "Delete action for ${chart.name}")
                                 onDelete()
                                 offsetX = 0f // Reset position
                             }
                             else -> {
                                 // Not far enough, snap back
+                                Log.d("SwipeableChartItem", "Snap back for ${chart.name}, offsetX=$offsetX")
                                 offsetX = 0f
                             }
-
                         }
                     }
                 ),
             color = Color(0xFF1A1A1A)
         ) {
             ChartListItem(chart = chart, chartCake = chartCake) {
-                if (offsetX == 0f) {
+                Log.d("SwipeableChartItem", "Tap detected for ${chart.name}, offsetX = $offsetX")
+                if (kotlin.math.abs(offsetX) < 1f) { // Use small threshold instead of exact 0f
+                    Log.d("SwipeableChartItem", "Calling onItemClick for ${chart.name}")
                     onItemClick(chartCake)
                 } else {
-                    // Reset position if tapped while swiping
+                    Log.d("SwipeableChartItem", "Resetting offsetX for ${chart.name} (was $offsetX)")
                     offsetX = 0f
                 }
             }

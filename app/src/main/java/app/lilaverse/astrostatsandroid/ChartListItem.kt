@@ -1,13 +1,18 @@
 // ChartListItem.kt
 package app.lilaverse.astrostatsandroid.ui
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lilaverse.astrostatsandroid.*
 import app.lilaverse.astrostatsandroid.model.Chart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,18 +38,23 @@ fun ChartListItem(chart: Chart, chartCake: ChartCake, onClick: () -> Unit) {
     val dstStatus = if (chart.isDstActive) "DST On" else "DST Off"
 
 
-    val totalPowerScores = remember(chartCake) {
-        PlanetStrengthCalculator(
-            orbDictionary,
-            houseProvider = { chartCake.houseCusps.houseForLongitude(it.longitude) },
-            luminaryChecker = { it.body.keyName in listOf("Sun", "Moon", "Mercury") },
-            houseCuspsProvider = { lon ->
-                val houseNum = chartCake.houseCusps.houseForLongitude(lon)
-                val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude
-                HouseCusp(houseNum, cuspLon)
-            },
-            houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
-        ).getTotalPowerScoresForPlanetsCo(chartCake.bodies)
+    var totalPowerScores by remember { mutableStateOf<Map<Coordinate, Double>>(emptyMap()) }
+
+    LaunchedEffect(chartCake) {
+        val scores = withContext(Dispatchers.IO) {
+            PlanetStrengthCalculator(
+                orbDictionary,
+                houseProvider = { chartCake.houseCusps.houseForLongitude(it.longitude) },
+                luminaryChecker = { it.body.keyName in listOf("Sun", "Moon", "Mercury") },
+                houseCuspsProvider = { lon ->
+                    val houseNum = chartCake.houseCusps.houseForLongitude(lon)
+                    val cuspLon = chartCake.houseCusps.getCusp(houseNum - 1).longitude
+                    HouseCusp(houseNum, cuspLon)
+                },
+                houseCuspValues = chartCake.houseCusps.allCusps().map { it.longitude }
+            ).getTotalPowerScoresForPlanetsCo(chartCake.bodies)
+        }
+        totalPowerScores = scores
     }
 
     // Get the strongest planet

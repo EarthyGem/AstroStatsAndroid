@@ -14,16 +14,34 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import app.lilaverse.astrostatsandroid.model.Chart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostController) {
-    val context = LocalContext.current
-    val tabs = listOf("Birth Chart", "Planets", "Signs", "Houses", "Aspects", "Transits","Progressions","AstroClock")
+fun ChartTabsScreen(
+    chart: Chart,
+    navController: NavHostController,
+    allCharts: List<Chart>
+) {
+    val tabs = listOf(
+        "Birth Chart",
+        "Planets",
+        "Signs",
+        "Houses",
+        "Aspects",
+//        "Transits",
+//        "Progressions",
+//        "Synastry",
+//        "South Node Story",
+//        "Astrocartography",
+        "AstroClock"
+
+    )
     var selectedTab by remember { mutableStateOf(0) }
 
     val chartCake = remember(chart) { ChartCake.from(chart) }
@@ -141,9 +159,16 @@ fun ChartTabsScreen(chart: Chart, chartCake: ChartCake, navController: NavHostCo
                     chartId = chart.id,
                     navController = navController
                 )
-                5 -> TransitsTab(chart = chart, chartCake = chartCake)
-                6 -> ProgressionsTab(chart = chart, chartCake = chartCake)
-                7 -> AstroClockTab(chart = chart)
+//                5 -> TransitsTab(chart = chart, chartCake = chartCake)
+//                6 -> ProgressionsTab(chart = chart, chartCake = chartCake)
+//                7 -> SynastryTab(
+//                    primaryChart = chart,
+//                    primaryChartCake = chartCake,
+//                    allCharts = allCharts)
+//                8 -> SouthNodeStoryScreen(chart = chart, chartCake = chartCake)
+//                9 -> AstrocartographyTab(chart = chart, chartCake = chartCake )
+                5 -> AstroClockTab(chart = chart)
+
 
             }
         }

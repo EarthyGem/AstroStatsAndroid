@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "app.lilaverse.astrostatsandroid.app-mergeDebugResources-71:/values-large-v4/values-large-v4.xml",
+            "outputFile": "app.lilaverse.astrostatsandroid.app-mergeDebugResources-72:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
                     "source": "/Users/errickmiron/.gradle/caches/8.13/transforms/26ef0a915bce401efda2a4d2dbf64b2b/transformed/appcompat-1.6.1/res/values-large-v4/values-large-v4.xml",

@@ -41,6 +41,17 @@ class ChartCake(
 
     val bodies: List<Coordinate>
         get() = natalBodies
+    fun createRelocatedChart(latitude: Double, longitude: Double, timezone: String = this.timezone): ChartCake {
+        val relocatedCusps = HouseCuspBuilder.create(latitude, longitude, birthDate, timezone)
+        return ChartCake(
+            birthDate = birthDate,
+            latitude = latitude,
+            longitude = longitude,
+            transitDate = transitDate,
+            houseCusps = relocatedCusps,
+            timezone = timezone
+        )
+    }
 
     fun bodiesFor(section: SectionType): List<Coordinate> = when (section) {
         SectionType.MAJORS -> majorBodies

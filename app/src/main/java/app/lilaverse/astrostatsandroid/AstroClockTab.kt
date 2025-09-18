@@ -543,18 +543,16 @@ private val planetOrder = listOf(
 )
 
 private val planetColorMap = mapOf(
-    "Sun" to Color(0xFFFFB300),
-    "Moon" to Color(0xFF64B5F6),
-    "Mercury" to Color(0xFF9575CD),
-    "Venus" to Color(0xFFF48FB1),
-    "Mars" to Color(0xFFE57373),
-    "Jupiter" to Color(0xFF7986CB),
-    "Saturn" to Color(0xFFA1887F),
-    "Uranus" to Color(0xFF4DB6AC),
-    "Neptune" to Color(0xFF4FC3F7),
-    "Pluto" to Color(0xFFBA68C8),
-    "Ascendant" to Color(0xFF455A64),
-    "Midheaven" to Color(0xFF00897B)
+    "Sun" to Color(0xFFFFA500),
+            "Moon" to Color(0xFF008B45),
+            "Mercury" to Color(0xFF8A2BE2),
+            "Venus" to Color(0xFFB8860B),
+            "Mars" to Color(0xFFFF0000),
+            "Jupiter" to Color(0xFF4B0082),
+            "Saturn" to Color(0xFF0000FF),
+            "Uranus" to Color(0xFF000000),
+            "Neptune" to Color(0xFF4682B4),
+            "Pluto" to Color(0xFF8B0000),
 )
 
 private fun planetColor(name: String): Color = planetColorMap[name] ?: Color(0xFF9E9E9E)

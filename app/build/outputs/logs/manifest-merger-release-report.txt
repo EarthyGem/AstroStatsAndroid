@@ -4,6 +4,8 @@ ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/Andr
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:2:1-54:12
+MERGED from [com.google.maps.android:maps-compose:4.3.3] /Users/errickmiron/.gradle/caches/8.13/transforms/ab0547e8bbbbf4cf57f2ec9ee91bbe15/transformed/maps-compose-4.3.3/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0b551835a0624a4a23ff66fdced04d23/transformed/maps-ktx-5.0.0/AndroidManifest.xml:18:1-23:12
 MERGED from [androidx.databinding:viewbinding:8.13.0] /Users/errickmiron/.gradle/caches/8.13/transforms/b64599732ebaa68cf7e179502f8c92da/transformed/viewbinding-8.13.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.13/transforms/a143da1485619b1b4c4a8d55957f05d6/transformed/places-3.3.0/AndroidManifest.xml:2:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/errickmiron/.gradle/caches/8.13/transforms/8473ef87b6e7cba021ef43a6bfe46bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
@@ -17,8 +19,8 @@ MERGED from [androidx.navigation:navigation-compose:2.7.7] /Users/errickmiron/.g
 MERGED from [androidx.room:room-runtime:2.6.1] /Users/errickmiron/.gradle/caches/8.13/transforms/8d0fb3a11a238850ace7b4b3913e790f/transformed/room-runtime-2.6.1/AndroidManifest.xml:17:1-31:12
 MERGED from [androidx.room:room-ktx:2.6.1] /Users/errickmiron/.gradle/caches/8.13/transforms/583c8c38f41d7faea26ce5b5aa0b5546/transformed/room-ktx-2.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:2:1-17:12
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:17:1-44:12
 MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/AndroidManifest.xml:2:1-9:12
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:17:1-38:12
 MERGED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:2:1-18:12
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:2:1-26:12
 MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/a59e54336b3481107b1f9044ea4d081d/transformed/firebase-auth-22.3.1/AndroidManifest.xml:17:1-75:12
@@ -66,9 +68,9 @@ MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.3] /Users/errick
 MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/85d141005e0e1a0d03b750b47f8dae4c/transformed/lifecycle-livedata-core-ktx-2.8.3/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/5992d3dd3649c9d0976c880a340fe219/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/693593e0bdf0e16b100db3dce60f2dbe/transformed/lifecycle-runtime-release/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:17:1-35:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/1050aff6bb129645db8221423537534d/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/322c99db3ab927205a0a24c74def8cd4/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:17:1-35:12
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/3c8170365cfe2206a60016e99c48dc5d/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/be16eeb6212057214b842fe6a23acc36/transformed/lifecycle-livedata-2.8.3/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/23a7a2d8b8c2f11b4fbf5c423c307bf8/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:2:1-7:12
@@ -94,11 +96,11 @@ MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] /Users/er
 MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/d758016064ab940344738ce1a603527f/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/errickmiron/.gradle/caches/8.13/transforms/fcf82948a516ee67cc07910d4ac34089/transformed/firebase-components-17.1.5/AndroidManifest.xml:15:1-20:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/58229596fe4fa8418c050224596f88a9/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:15:1-23:12
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/97997708021446856baab6d902a7c8b6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/errickmiron/.gradle/caches/8.13/transforms/5f8919c6d65509e4ebc94fd5d2791827/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0d2aa68a498ee7f44c028305fc0a0a42/transformed/tracing-1.0.0/AndroidManifest.xml:17:1-24:12
-MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:15:1-23:12
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.volley:volley:1.2.1] /Users/errickmiron/.gradle/caches/8.13/transforms/16fefe51ad0410124026f75e8049607b/transformed/volley-1.2.1/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.datatransport:transport-api:2.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/46df6783830a8a0f8ce8f7e2b46546ae/transformed/transport-api-2.2.0/AndroidManifest.xml:15:1-22:12
 MERGED from [io.grpc:grpc-android:1.57.2] /Users/errickmiron/.gradle/caches/8.13/transforms/6d2df5ed71d013bc6c6fa618117f6db1/transformed/grpc-android-1.57.2/AndroidManifest.xml:2:1-9:12
@@ -118,8 +120,8 @@ uses-permission#android.permission.INTERNET
 ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:7:5-67
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.13/transforms/a143da1485619b1b4c4a8d55957f05d6/transformed/places-3.3.0/AndroidManifest.xml:12:5-67
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.13/transforms/a143da1485619b1b4c4a8d55957f05d6/transformed/places-3.3.0/AndroidManifest.xml:12:5-67
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:24:5-67
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:24:5-67
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:11:5-67
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:11:5-67
 MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/a59e54336b3481107b1f9044ea4d081d/transformed/firebase-auth-22.3.1/AndroidManifest.xml:25:5-67
@@ -132,8 +134,8 @@ MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] /User
 		ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:7:22-64
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml:8:5-79
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:23:5-79
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:23:5-79
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:10:5-79
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:10:5-79
 MERGED from [com.google.firebase:firebase-auth:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/a59e54336b3481107b1f9044ea4d081d/transformed/firebase-auth-22.3.1/AndroidManifest.xml:26:5-79
@@ -171,10 +173,10 @@ MERGED from [androidx.room:room-runtime:2.6.1] /Users/errickmiron/.gradle/caches
 MERGED from [androidx.room:room-runtime:2.6.1] /Users/errickmiron/.gradle/caches/8.13/transforms/8d0fb3a11a238850ace7b4b3913e790f/transformed/room-runtime-2.6.1/AndroidManifest.xml:23:5-29:19
 MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:7:5-15:19
 MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:7:5-15:19
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:36:5-42:19
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:36:5-42:19
 MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/AndroidManifest.xml:7:5-20
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:30:5-36:19
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:30:5-36:19
 MERGED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:8:5-16:19
 MERGED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:8:5-16:19
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:13:5-24:19
@@ -287,6 +289,10 @@ uses-sdk
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml
 INJECTED from /Users/errickmiron/StudioProjects/AstroStatsAndroid/app/src/main/AndroidManifest.xml
+MERGED from [com.google.maps.android:maps-compose:4.3.3] /Users/errickmiron/.gradle/caches/8.13/transforms/ab0547e8bbbbf4cf57f2ec9ee91bbe15/transformed/maps-compose-4.3.3/AndroidManifest.xml:20:5-44
+MERGED from [com.google.maps.android:maps-compose:4.3.3] /Users/errickmiron/.gradle/caches/8.13/transforms/ab0547e8bbbbf4cf57f2ec9ee91bbe15/transformed/maps-compose-4.3.3/AndroidManifest.xml:20:5-44
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0b551835a0624a4a23ff66fdced04d23/transformed/maps-ktx-5.0.0/AndroidManifest.xml:21:5-44
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0b551835a0624a4a23ff66fdced04d23/transformed/maps-ktx-5.0.0/AndroidManifest.xml:21:5-44
 MERGED from [androidx.databinding:viewbinding:8.13.0] /Users/errickmiron/.gradle/caches/8.13/transforms/b64599732ebaa68cf7e179502f8c92da/transformed/viewbinding-8.13.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.databinding:viewbinding:8.13.0] /Users/errickmiron/.gradle/caches/8.13/transforms/b64599732ebaa68cf7e179502f8c92da/transformed/viewbinding-8.13.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.libraries.places:places:3.3.0] /Users/errickmiron/.gradle/caches/8.13/transforms/a143da1485619b1b4c4a8d55957f05d6/transformed/places-3.3.0/AndroidManifest.xml:7:5-44
@@ -313,10 +319,10 @@ MERGED from [androidx.room:room-ktx:2.6.1] /Users/errickmiron/.gradle/caches/8.1
 MERGED from [androidx.room:room-ktx:2.6.1] /Users/errickmiron/.gradle/caches/8.13/transforms/583c8c38f41d7faea26ce5b5aa0b5546/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
 MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/AndroidManifest.xml:5:5-44
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:20:5-44
-MERGED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-firestore:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/7ab66f0c630f1c8438bc623a7b5881cd/transformed/firebase-firestore-24.10.2/AndroidManifest.xml:6:5-44
@@ -411,12 +417,12 @@ MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /Users/erri
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/5992d3dd3649c9d0976c880a340fe219/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/693593e0bdf0e16b100db3dce60f2dbe/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/693593e0bdf0e16b100db3dce60f2dbe/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
-MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/1050aff6bb129645db8221423537534d/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/1050aff6bb129645db8221423537534d/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/322c99db3ab927205a0a24c74def8cd4/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:5:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/322c99db3ab927205a0a24c74def8cd4/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/2682fded39ed4cfd94d24a89d90c59f7/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/3c8170365cfe2206a60016e99c48dc5d/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/3c8170365cfe2206a60016e99c48dc5d/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.3] /Users/errickmiron/.gradle/caches/8.13/transforms/be16eeb6212057214b842fe6a23acc36/transformed/lifecycle-livedata-2.8.3/AndroidManifest.xml:20:5-44
@@ -467,16 +473,16 @@ MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/errickmiron/
 MERGED from [com.google.firebase:firebase-components:17.1.5] /Users/errickmiron/.gradle/caches/8.13/transforms/fcf82948a516ee67cc07910d4ac34089/transformed/firebase-components-17.1.5/AndroidManifest.xml:18:5-44
 MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/58229596fe4fa8418c050224596f88a9/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/58229596fe4fa8418c050224596f88a9/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:19:5-21:41
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/97997708021446856baab6d902a7c8b6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/97997708021446856baab6d902a7c8b6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/errickmiron/.gradle/caches/8.13/transforms/5f8919c6d65509e4ebc94fd5d2791827/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
 MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/errickmiron/.gradle/caches/8.13/transforms/5f8919c6d65509e4ebc94fd5d2791827/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0d2aa68a498ee7f44c028305fc0a0a42/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0d2aa68a498ee7f44c028305fc0a0a42/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:19:5-21:41
-MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] /Users/errickmiron/.gradle/caches/8.13/transforms/125d3733fe4615b02c167400d005d7f8/transformed/firebase-encoders-json-16.1.0/AndroidManifest.xml:19:5-21:41
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/557230061d4e3d27d2bda60bf2de02e6/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.android.volley:volley:1.2.1] /Users/errickmiron/.gradle/caches/8.13/transforms/16fefe51ad0410124026f75e8049607b/transformed/volley-1.2.1/AndroidManifest.xml:5:5-43
 MERGED from [com.android.volley:volley:1.2.1] /Users/errickmiron/.gradle/caches/8.13/transforms/16fefe51ad0410124026f75e8049607b/transformed/volley-1.2.1/AndroidManifest.xml:5:5-43
 MERGED from [com.google.android.datatransport:transport-api:2.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/46df6783830a8a0f8ce8f7e2b46546ae/transformed/transport-api-2.2.0/AndroidManifest.xml:18:5-20:41
@@ -532,17 +538,23 @@ ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gr
 	android:name
 		ADDED from [com.google.firebase:firebase-auth-ktx:22.3.1] /Users/errickmiron/.gradle/caches/8.13/transforms/29728a141054356c3fd5dd246205a8fa/transformed/firebase-auth-ktx-22.3.1/AndroidManifest.xml:12:17-119
 uses-feature#0x00020000
-ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:26:5-28:35
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:26:5-28:35
 	android:glEsVersion
-		ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:27:9-41
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:27:9-41
 	android:required
-		ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:28:9-32
-uses-library#org.apache.http.legacy
-ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:33:9-35:40
-	android:required
-		ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:35:13-37
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:28:9-32
+queries
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:30:5-34:15
+package#com.google.android.apps.maps
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:33:9-64
 	android:name
-		ADDED from [com.google.android.gms:play-services-maps:17.0.0] /Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/AndroidManifest.xml:34:13-50
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:33:18-61
+uses-library#org.apache.http.legacy
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:39:9-41:40
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:41:13-37
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] /Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/AndroidManifest.xml:40:13-50
 meta-data#com.google.firebase.components:com.google.firebase.firestore.ktx.FirebaseFirestoreLegacyRegistrar
 ADDED from [com.google.firebase:firebase-firestore-ktx:24.10.2] /Users/errickmiron/.gradle/caches/8.13/transforms/fa74a12eda66ab5bd1bfe9ce824e8104/transformed/firebase-firestore-ktx-24.10.2/AndroidManifest.xml:12:13-14:85
 	android:value

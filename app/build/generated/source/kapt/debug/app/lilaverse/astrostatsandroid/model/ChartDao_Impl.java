@@ -147,7 +147,7 @@ public final class ChartDao_Impl implements ChartDao {
   }
 
   @Override
-  public Object insertChart(final Chart chart, final Continuation<? super Unit> arg1) {
+  public Object insertChart(final Chart chart, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -161,11 +161,11 @@ public final class ChartDao_Impl implements ChartDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteChart(final Chart chart, final Continuation<? super Unit> arg1) {
+  public Object deleteChart(final Chart chart, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -179,11 +179,11 @@ public final class ChartDao_Impl implements ChartDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteAllCharts(final Continuation<? super Unit> arg0) {
+  public Object deleteAllCharts(final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -202,7 +202,7 @@ public final class ChartDao_Impl implements ChartDao {
           __preparedStmtOfDeleteAllCharts.release(_stmt);
         }
       }
-    }, arg0);
+    }, $completion);
   }
 
   @Override
@@ -341,7 +341,7 @@ public final class ChartDao_Impl implements ChartDao {
   }
 
   @Override
-  public Object getChartById(final int id, final Continuation<? super Chart> arg1) {
+  public Object getChartById(final int id, final Continuation<? super Chart> $completion) {
     final String _sql = "SELECT * FROM Chart WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -471,7 +471,7 @@ public final class ChartDao_Impl implements ChartDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @NonNull

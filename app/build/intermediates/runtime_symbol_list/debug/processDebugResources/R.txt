@@ -94,6 +94,7 @@ int attr autoSizeStepGranularity 0x7f03003d
 int attr autoSizeTextType 0x7f03003e
 int attr autoTransition 0x7f03003f
 int attr background 0x7f030040
+int attr backgroundColor 0x7f03027b
 int attr backgroundSplit 0x7f030041
 int attr backgroundStacked 0x7f030042
 int attr backgroundTint 0x7f030043
@@ -407,6 +408,7 @@ int attr listPreferredItemPaddingStart 0x7f030176
 int attr liteMode 0x7f030177
 int attr logo 0x7f030178
 int attr logoDescription 0x7f030179
+int attr mapId 0x7f03027c
 int attr mapType 0x7f03017a
 int attr maxAcceleration 0x7f03017b
 int attr maxButtonHeight 0x7f03017c
@@ -1629,6 +1631,7 @@ int id line3 0x7f0800c6
 int id linear 0x7f0800c7
 int id listMode 0x7f0800c8
 int id list_item 0x7f0800c9
+int id maps_compose_nodraw_container_view 0x7f080168
 int id match_constraint 0x7f0800ca
 int id match_parent 0x7f0800cb
 int id message 0x7f0800cc
@@ -3420,7 +3423,7 @@ int[] styleable LoadingImageView { 0x7f03007a, 0x7f030115, 0x7f030116 }
 int styleable LoadingImageView_circleCrop 0
 int styleable LoadingImageView_imageAspectRatio 1
 int styleable LoadingImageView_imageAspectRatioAdjust 2
-int[] styleable MapAttrs { 0x7f03002f, 0x7f03005c, 0x7f03005d, 0x7f03005e, 0x7f03005f, 0x7f030060, 0x7f030061, 0x7f030062, 0x7f030123, 0x7f030124, 0x7f030125, 0x7f030126, 0x7f030177, 0x7f03017a, 0x7f030257, 0x7f030258, 0x7f030259, 0x7f03025a, 0x7f03025b, 0x7f03025c, 0x7f03025d, 0x7f03025e, 0x7f030261, 0x7f03027a }
+int[] styleable MapAttrs { 0x7f03002f, 0x7f03005c, 0x7f03005d, 0x7f03005e, 0x7f03005f, 0x7f030060, 0x7f030061, 0x7f030062, 0x7f030123, 0x7f030124, 0x7f030125, 0x7f030126, 0x7f030177, 0x7f03017a, 0x7f030257, 0x7f030258, 0x7f030259, 0x7f03025a, 0x7f03025b, 0x7f03025c, 0x7f03025d, 0x7f03025e, 0x7f030261, 0x7f03027a, 0x7f03027b, 0x7f03027c }
 int styleable MapAttrs_ambientEnabled 0
 int styleable MapAttrs_cameraBearing 1
 int styleable MapAttrs_cameraMaxZoomPreference 2
@@ -3445,6 +3448,8 @@ int styleable MapAttrs_uiZoomControls 20
 int styleable MapAttrs_uiZoomGestures 21
 int styleable MapAttrs_useViewLifecycle 22
 int styleable MapAttrs_zOrderOnTop 23
+int styleable MapAttrs_backgroundColor 24
+int styleable MapAttrs_mapId 25
 int[] styleable MenuGroup { 0x0101000e, 0x010100d0, 0x01010194, 0x010101de, 0x010101df, 0x010101e0 }
 int styleable MenuGroup_android_enabled 0
 int styleable MenuGroup_android_id 1

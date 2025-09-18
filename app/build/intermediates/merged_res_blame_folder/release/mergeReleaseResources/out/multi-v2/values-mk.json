@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-67:/values-mk/values-mk.xml",
+            "outputFile": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-68:/values-mk/values-mk.xml",
             "map": [
                 {
                     "source": "/Users/errickmiron/.gradle/caches/8.13/transforms/327612ba90b27a1395d8e25c4a7477e6/transformed/browser-1.4.0/res/values-mk/values-mk.xml",

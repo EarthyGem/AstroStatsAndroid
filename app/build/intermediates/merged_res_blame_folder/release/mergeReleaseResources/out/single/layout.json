@@ -1,14 +1,14 @@
 [
     {
-        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-68:/layout/item_message_user.xml",
-        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/item_message_user.xml"
+        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-69:/layout/item_message_assistant.xml",
+        "source": "app.lilaverse.astrostatsandroid.app-main-71:/layout/item_message_assistant.xml"
     },
     {
-        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-68:/layout/activity_chat.xml",
-        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/activity_chat.xml"
+        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-69:/layout/item_message_user.xml",
+        "source": "app.lilaverse.astrostatsandroid.app-main-71:/layout/item_message_user.xml"
     },
     {
-        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-68:/layout/item_message_assistant.xml",
-        "source": "app.lilaverse.astrostatsandroid.app-main-70:/layout/item_message_assistant.xml"
+        "merged": "app.lilaverse.astrostatsandroid.app-mergeReleaseResources-69:/layout/activity_chat.xml",
+        "source": "app.lilaverse.astrostatsandroid.app-main-71:/layout/activity_chat.xml"
     }
 ]

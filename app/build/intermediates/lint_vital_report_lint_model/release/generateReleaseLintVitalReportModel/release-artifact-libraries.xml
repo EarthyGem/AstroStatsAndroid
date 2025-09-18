@@ -4,6 +4,32 @@
       jars="/Users/errickmiron/StudioProjects/AstroStatsAndroid/app/libs/swisseph-2.00.00-01.jar"
       resolved="__local_aars__:/Users/errickmiron/StudioProjects/AstroStatsAndroid/app/libs/swisseph-2.00.00-01.jar:unspecified"/>
   <library
+      name="com.google.maps.android:maps-compose:4.3.3@aar"
+      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/ab0547e8bbbbf4cf57f2ec9ee91bbe15/transformed/maps-compose-4.3.3/jars/classes.jar"
+      resolved="com.google.maps.android:maps-compose:4.3.3"
+      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/ab0547e8bbbbf4cf57f2ec9ee91bbe15/transformed/maps-compose-4.3.3"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.google.maps.android:maps-ktx:5.0.0@aar"
+      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/0b551835a0624a4a23ff66fdced04d23/transformed/maps-ktx-5.0.0/jars/classes.jar"
+      resolved="com.google.maps.android:maps-ktx:5.0.0"
+      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/0b551835a0624a4a23ff66fdced04d23/transformed/maps-ktx-5.0.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="androidx.databinding:viewbinding:8.13.0@aar"
       jars="/Users/errickmiron/.gradle/caches/8.13/transforms/b64599732ebaa68cf7e179502f8c92da/transformed/viewbinding-8.13.0/jars/classes.jar"
       resolved="androidx.databinding:viewbinding:8.13.0"
@@ -108,10 +134,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="com.google.android.gms:play-services-location:20.0.0@aar"
-      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/jars/classes.jar"
-      resolved="com.google.android.gms:play-services-location:20.0.0"
-      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0"
+      name="com.google.android.gms:play-services-maps:18.2.0@aar"
+      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-maps:18.2.0"
+      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/950ffcff4012f96fde93ee28f8ee2b35/transformed/play-services-maps-18.2.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -121,10 +147,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="com.google.android.gms:play-services-maps:17.0.0@aar"
-      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0/jars/classes.jar"
-      resolved="com.google.android.gms:play-services-maps:17.0.0"
-      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/0309931ba0ea1467c8206a2ef7730a6a/transformed/play-services-maps-17.0.0"
+      name="com.google.android.gms:play-services-location:20.0.0@aar"
+      jars="/Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0/jars/classes.jar"
+      resolved="com.google.android.gms:play-services-location:20.0.0"
+      folder="/Users/errickmiron/.gradle/caches/8.13/transforms/99dd5058814099ca1769d80faaa63037/transformed/play-services-location-20.0.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -1169,9 +1195,9 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22@jar"
-      jars="/Users/errickmiron/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.8.22/4dabb8248310d833bb6a8b516024a91fd3d275c/kotlin-stdlib-jdk7-1.8.22.jar"
-      resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"/>
+      name="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22@jar"
+      jars="/Users/errickmiron/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.22/c4b17283ad7939e778989663f8301d871987fa5e/kotlin-stdlib-jdk7-1.9.22.jar"
+      resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"/>
   <library
       name="org.jetbrains.kotlin:kotlin-stdlib:2.0.21@jar"
       jars="/Users/errickmiron/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.0.21/618b539767b4899b4660a83006e052b63f1db551/kotlin-stdlib-2.0.21.jar"

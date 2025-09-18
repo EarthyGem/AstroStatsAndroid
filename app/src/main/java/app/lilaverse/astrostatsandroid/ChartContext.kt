@@ -4,6 +4,7 @@ enum class ChartContextType {
     NATAL,
     TRANSIT,
     SYNASTRY,
+    RELOCATED,
     OTHER_PERSON
 }
 
